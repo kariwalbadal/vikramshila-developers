@@ -13,10 +13,18 @@ function heroSection(p) {
   var waHref = site.whatsapp.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(waText));
   var phone = p.phone || site.phones.primary;
   var phoneHref = p.phone ? 'tel:' + p.phone.replace(/[^\d+]/g, '') : site.phones.primaryHref;
-  // set letter by letter so the name can rise as a sequence, not a block
-  var letters = p.name.split('').map(function (ch, i) {
-    if (ch === ' ') return '<span class="sp">&nbsp;</span>';
-    return '<span class="ch" style="--i:' + i + '">' + esc(ch) + '</span>';
+  // Set letter by letter so the name rises as a sequence — but group the
+  // letters into non-breaking words first. Splitting on bare characters let
+  // the browser break anywhere, which put a lone "t" on its own line under
+  // "Keshavam Apartmen" at 390px.
+  var chi = 0;
+  var words = p.name.split(' ');
+  var letters = words.map(function (word, wi) {
+    var chars = word.split('').map(function (ch) {
+      return '<span class="ch" style="--i:' + (chi++) + '">' + esc(ch) + '</span>';
+    }).join('');
+    return '<span class="word">' + chars + '</span>' +
+      (wi < words.length - 1 ? '<span class="sp">&nbsp;</span>' : '');
   }).join('');
 
   return `
@@ -136,7 +144,7 @@ function unitExplorer(p) {
         <div class="ue-readout">${panels}</div>
         ${plan ? `<a class="ue-plan" href="${u('/images/optimized/' + plan.file)}" data-lightbox data-caption="${esc(p.name)} — ${esc(plan.caption)}">
           <img src="${u('/images/optimized/' + plan.file)}" alt="${esc(p.name)} — ${esc(plan.caption)}" loading="lazy">
-          <span class="ue-plan-tag">${esc(plan.caption)} &middot; tap to enlarge</span>
+          <span class="ue-plan-tag">${esc(plan.caption)} &mdash; all units shown &middot; tap to enlarge</span>
         </a>` : ''}
       </div>
     </div>
@@ -150,10 +158,11 @@ function noScheduleNote(p) {
   if (p.areaTables && p.areaTables.length) return '';
   return `
 <section class="section section-ink">
-  <div class="wrap" style="max-width:64ch">
+  <div class="wrap">
     <div class="eyebrow">The Homes</div>
-    <h2 class="display-2" style="margin-top:18px">${esc(p.unitSummary || 'Configurations')}</h2>
-    <p class="lede" style="margin-top:16px">A unit-by-unit area schedule has not been published for ${esc(p.name)}. Ask us and we will send you the current one.</p>
+    <h2 class="display-2" style="margin-top:18px">The homes here.</h2>
+    ${p.unitSummary ? `<p class="lede" style="margin-top:14px;max-width:56ch">${esc(p.unitSummary)}</p>` : ''}
+    <p class="lede" style="margin-top:16px;max-width:56ch">A unit-by-unit area schedule has not been published for ${esc(p.name)}. Ask us and we will send you the current one.</p>
     <div style="margin-top:28px"><a class="btn btn-brass" href="${site.whatsapp.href}" target="_blank" rel="noopener">Request the area schedule</a></div>
   </div>
 </section>`;
@@ -286,7 +295,7 @@ function roomsSection(p) {
 </section>
 <section class="section section-ink amenities-sec">
   <div class="wrap">
-    <div class="section-head reveal"><div class="eyebrow">Facilities</div></div>
+    <div class="section-head reveal"><div class="eyebrow">Facilities</div><h2 class="display-2" style="margin-top:18px">Everything on site.</h2></div>
     <ul class="am-list">${(p.facilities || []).map(function (f, i) {
       return `<li class="reveal"><span class="am-n">${String(i + 1).padStart(2, '0')}</span><span class="am-t">${esc(f)}</span></li>`;
     }).join('')}</ul>
@@ -299,7 +308,7 @@ function testimonialsSection(p) {
   return `
 <section class="section section-paper">
   <div class="wrap">
-    <div class="section-head reveal"><div class="eyebrow">In Their Words</div></div>
+    <div class="section-head reveal"><div class="eyebrow">In Their Words</div><h2 class="display-2" style="margin-top:18px">What guests say.</h2></div>
     <div class="quote-grid">
       ${p.testimonials.map(function (t) {
         return `<blockquote class="quote-card reveal">

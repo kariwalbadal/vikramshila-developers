@@ -6,6 +6,8 @@
 const RESIDENTIAL = [
   {
     slug: 'sunrise',
+    moodPlate: 'light-shadow',
+    moodLine: 'Twenty-two homes, and a gymnasium, a community hall and a play area that belong to all of them.',
     name: 'Sunrise',
     kind: 'residential',
     status: 'Ongoing',
@@ -41,6 +43,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'tejprabharesidency',
+    moodPlate: 'interior-warm',
+    moodLine: 'Purnia, off the Lalganj road — a gated address built to stand through the shaking this land knows.',
     name: 'Tejprabha Residency',
     kind: 'residential',
     status: 'Ongoing',
@@ -61,6 +65,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'chandeshwar-apartment',
+    moodPlate: 'stone-marble',
+    moodLine: 'Granite underfoot, copper in the walls, and a frame engineered before a single flat was sold.',
     name: 'Chandeshwar Apartment',
     kind: 'residential',
     status: 'Ongoing',
@@ -87,6 +93,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'keshavam-apartment',
+    moodPlate: 'interior-warm',
+    moodLine: 'Two blocks, nine floors, twelve ways to live in Deoghar — each measured to the square foot.',
     name: 'Keshavam Apartment',
     kind: 'residential',
     status: 'Ongoing',
@@ -127,6 +135,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'ganesh-enclave',
+    moodPlate: 'light-shadow',
+    moodLine: 'Seventy-two homes off Mirzan Hat Road, a pool, a temple, and the market a short walk away.',
     name: 'Ganesh Enclave',
     kind: 'residential',
     status: 'Completed',
@@ -149,6 +159,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'shivalaya',
+    moodPlate: 'stone-marble',
+    moodLine: 'Named for the abode of Shiva, built in the temple town itself — a rooftop above, Deoghar below.',
     name: 'Shivalaya',
     kind: 'residential',
     status: 'Completed',
@@ -179,13 +191,15 @@ const RESIDENTIAL = [
   },
   {
     slug: 'annapurna-heights',
+    moodPlate: 'interior-warm',
+    moodLine: 'Kolkata, in two blocks — where a lift by KONE and a point for the air-conditioner were decided early.',
     name: 'Annapurna Heights',
     kind: 'residential',
     status: 'Completed',
     tagline: '2BHK / 3BHK luxury flats in Kolkata',
     location: 'Kolkata, West Bengal',
     address: '8 Naya Patti Road, Plaza Tower Complex, Block-D-2, 4th Floor, R.N-9, Kolkata – 700055, West Bengal, India',
-    description: 'Imagine a life where the world revolves around you — where the city and everything you need surrounds you, admist a nature-soaked environment with 24×7 security for your family.',
+    description: 'Imagine a life where the world revolves around you — where the city and everything you need surrounds you, amidst a nature-soaked environment with 24×7 security for your family.',
     unitSummary: '2BHK / 3BHK across Block 1 & Block 2, 1st–4th floor',
     areaTables: [
       { caption: 'Block 1 — Typical 1st to 4th Floor', rows: [
@@ -211,6 +225,8 @@ const RESIDENTIAL = [
   },
   {
     slug: 'jagdish-enclave',
+    moodPlate: 'light-shadow',
+    moodLine: 'Ground and five floors near Chanakya Vihar, with servant quarters, a top-floor gym and cross-ventilation throughout.',
     name: 'Jagdish Enclave',
     kind: 'residential',
     status: 'Ongoing',
@@ -269,7 +285,7 @@ const HOSPITALITY = [
 
 const STUBS = [
   { name: 'Devpreet Vikramshila', location: 'Jharkhand', status: 'Completed', unitSummary: '2BHK / 3BHK' },
-  { name: 'Shyamri Tower', location: 'Not stated', status: 'Completed', unitSummary: '2BHK / 3BHK' },
+  { name: 'Shyamri Tower', location: '', status: 'Completed', unitSummary: '2BHK / 3BHK' },
   { name: 'Astha Garden', location: 'Jharkhand', status: 'Completed', unitSummary: '2BHK / 3BHK' },
 ];
 

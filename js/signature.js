@@ -64,10 +64,12 @@
   // works under any deployment base path, not only at domain root
   import('../vendor/three.module.js').then(function (THREE) {
     var w = window.innerWidth;
-    // tile count is a legibility decision, not a perf one: too fine and you
-    // lose the sense of individual pieces, too coarse and the mosaic never
-    // resolves into a building
-    var cols = w < 700 ? 104 : w < 1100 ? 148 : 194;
+    // Tile count is a legibility decision, not a perf one. An earlier build
+    // used ~25,000 tiles and the eye simply integrated the whole field as
+    // texture — it read as television static, not as pieces. A jigsaw piece
+    // has to be big enough to see as an object, so this is deliberately
+    // coarse: around a thousand tiles, each ~40px on screen.
+    var cols = w < 700 ? 34 : w < 1100 ? 44 : 54;
 
     var sampleImg = heroImg; // same-origin and already loading for display — don't fetch twice
 
@@ -108,12 +110,18 @@
           targets[i3 + 1] = py;
           targets[i3 + 2] = 0; // dead flat at rest: a true grid, so tiles abut
 
-          // scattered origin — wide, deep, and behind the frame
+          // Origin sits NEAR its slot, only slightly behind the frame. The
+          // previous version threw tiles 7–22 units out and 8–34 units back;
+          // because three.js scales point size by 1/-z, a tile that far away
+          // rendered at a third of its landed size, so the whole flight was
+          // sub-pixel confetti with black between it. Keeping the throw short
+          // and shallow means a tile stays tile-sized the entire way in, and
+          // the motion reads as placing rather than exploding.
           var ang = Math.random() * Math.PI * 2;
-          var rad = 7 + Math.random() * 15;
+          var rad = 1.1 + Math.random() * 2.4;
           starts[i3] = px + Math.cos(ang) * rad;
-          starts[i3 + 1] = py + Math.sin(ang) * rad * 0.6;
-          starts[i3 + 2] = -8 - Math.random() * 26;
+          starts[i3 + 1] = py + Math.sin(ang) * rad * 0.7;
+          starts[i3 + 2] = -1.4 - Math.random() * 2.6;
           positions[i3] = starts[i3];
           positions[i3 + 1] = starts[i3 + 1];
           positions[i3 + 2] = starts[i3 + 2];
@@ -184,7 +192,9 @@
       hero.classList.add('sig-active');
       document.documentElement.classList.remove('sig-pending');
 
-      var DUR = 2800;
+      // The picture has to be readable fast — two and a half seconds of
+      // assembly is an eternity on a landing page.
+      var DUR = 1700;
       var t0 = performance.now();
       var posAttr = geo.getAttribute('position');
       var colAttr = geo.getAttribute('color');
@@ -207,9 +217,11 @@
           positions[p3 + 1] = starts[p3 + 1] + (targets[p3 + 1] - starts[p3 + 1]) * e;
           positions[p3 + 2] = starts[p3 + 2] + (targets[p3 + 2] - starts[p3 + 2]) * e;
 
-          // a tile is dim in flight and reaches full colour as it seats —
-          // the picture gains substance as it assembles
-          var lum = 0.28 + 0.72 * lp;
+          // A tile darkens only slightly in flight. At 0.28 the in-flight
+          // field was near-black on a near-black page, which is what made it
+          // read as dim static; starting at 0.62 keeps every piece legible as
+          // a piece from the first frame.
+          var lum = 0.62 + 0.38 * lp;
           colors[p3] = baseColors[p3] * lum;
           colors[p3 + 1] = baseColors[p3 + 1] * lum;
           colors[p3 + 2] = baseColors[p3 + 2] * lum;

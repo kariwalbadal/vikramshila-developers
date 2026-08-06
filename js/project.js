@@ -16,8 +16,9 @@
   /* ---------- vitals bar pins once the hero is past ---------- */
   var vitals = document.querySelector('[data-vitals]');
   if (vitals && heroEl) {
+    var headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 102;
     var onScrollVitals = function () {
-      var past = heroEl.getBoundingClientRect().bottom <= 96;
+      var past = heroEl.getBoundingClientRect().bottom <= headerH;
       vitals.classList.toggle('is-pinned', past);
     };
     onScrollVitals();
@@ -76,6 +77,11 @@
       '<button class="lb-nav lb-next" type="button" aria-label="Next image">&#8250;</button>' +
       '<figure class="lb-figure"><img alt=""><figcaption></figcaption></figure>';
     document.body.appendChild(lb);
+    // two large enabled-looking arrows on a one-image gallery are controls
+    // that do nothing — remove them rather than leave them inert
+    if (links.length < 2) {
+      Array.prototype.forEach.call(lb.querySelectorAll('.lb-nav'), function (n) { n.remove(); });
+    }
 
     var lbImg = lb.querySelector('img');
     var lbCap = lb.querySelector('figcaption');
@@ -108,15 +114,30 @@
       a.addEventListener('click', function (e) { e.preventDefault(); open(i); });
     });
     lb.querySelector('.lb-close').addEventListener('click', close);
-    lb.querySelector('.lb-prev').addEventListener('click', function () { show(idx - 1); });
-    lb.querySelector('.lb-next').addEventListener('click', function () { show(idx + 1); });
+    // these are removed above on single-image sets, so guard before binding
+    var prevBtn = lb.querySelector('.lb-prev');
+    var nextBtn = lb.querySelector('.lb-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { show(idx - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { show(idx + 1); });
     lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
     document.addEventListener('keydown', function (e) {
       if (!lb.classList.contains('is-open')) return;
       if (e.key === 'Escape') close();
       else if (e.key === 'ArrowLeft') show(idx - 1);
       else if (e.key === 'ArrowRight') show(idx + 1);
-      else if (e.key === 'Tab') { e.preventDefault(); } // keep focus inside the dialog
+      else if (e.key === 'Tab') {
+        // cycle focus inside the dialog. The previous version just called
+        // preventDefault(), which didn't trap focus — it disabled Tab
+        // entirely, so a keyboard user could never reach close or next.
+        var f = Array.prototype.slice.call(lb.querySelectorAll('button'));
+        if (!f.length) return;
+        var i = f.indexOf(document.activeElement);
+        var nxt = e.shiftKey ? i - 1 : i + 1;
+        if (nxt < 0) nxt = f.length - 1;
+        if (nxt >= f.length) nxt = 0;
+        e.preventDefault();
+        f[nxt].focus();
+      }
     });
   }
 
