@@ -31,8 +31,11 @@ const RESIDENTIAL = [
       { group: 'Flooring', text: 'Vitrified tiles throughout.' },
     ],
     heroImage: '2-02-3.jpg',
-    gallery: ['2-02-3.jpg'],
-    floorPlans: [{ file: 'sunrise-bgp-02-1.png', caption: 'Typical Floor Plan' }, { file: '3-02.png', caption: 'Area Statement' }],
+    gallery: [],
+    // sunrise-bgp-02-1.png was captioned "Typical Floor Plan" but is actually
+    // the project's clip-art logo — dropped. 3-02.png is the genuine plan
+    // (units A–F, sqft matching the area table above).
+    floorPlans: [{ file: '3-02.png', caption: 'Typical Floor Plan' }],
     brochure: null,
     notes: [],
   },
@@ -50,7 +53,8 @@ const RESIDENTIAL = [
     amenities: ['Earthquake-resistant structure', 'Generator backup', 'Security cabin with intercom facility', 'Elegant designer entrance gate', 'Ample car parking', '24×7 water supply', 'State-of-the-art elevators', 'Rain water harvesting', 'Internal walls finished with smooth gypsum plaster'],
     specifications: [],
     heroImage: '2-02-1.jpg',
-    gallery: ['2-02-1.jpg'],
+    gallery: [], // the only render is already the hero — don't repeat it below
+
     floorPlans: [{ file: '7-01-scaled-1.jpg', caption: 'Floor Plan' }],
     brochure: null,
     notes: ['Unit areas in sqft were not published for this project.'],
@@ -76,7 +80,7 @@ const RESIDENTIAL = [
       { group: 'Doors & windows', text: 'Designer main door; powder-coated aluminium windows; designer balcony railing.' },
     ],
     heroImage: '0000_23_Chandeshwar_Apartment-05-01-2_11zon.jpg',
-    gallery: ['0000_23_Chandeshwar_Apartment-05-01-2_11zon.jpg', 'Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg'],
+    gallery: ['Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg'], // hero not repeated
     floorPlans: [{ file: 'New-Project-1.jpg', caption: 'Floor Plan & Views' }],
     brochure: null,
     notes: ['No marketing description paragraph or unit-area table was published for this project.'],
@@ -116,7 +120,7 @@ const RESIDENTIAL = [
       { group: 'Fittings', text: 'Concealed copper wiring; Havells or equivalent switches; vitrified tile flooring; branded CP fittings; granite kitchen platform with steel sink.' },
     ],
     heroImage: '1.png',
-    gallery: ['1.png', '12.png', '15.png'],
+    gallery: ['12.png', '15.png'], // hero (1.png) not repeated
     floorPlans: [{ file: '28.png', caption: 'Floor Plan — Block A' }, { file: '29.png', caption: 'Floor Plan — Block B' }],
     brochure: null,
     notes: [],
@@ -225,7 +229,8 @@ const RESIDENTIAL = [
     amenities: ['Elegant designer entrance gate with security cabin', 'Community hall with kitchen (ground floor)', 'State-of-the-art gymnasium (top floor)', 'Children’s play area', 'Generator backup for apartments, lifts and common areas', 'Earthquake-resistant structure', 'Internal paved road', 'Intercom facility', 'Rain water harvesting', 'Fire-fighting system', 'Separate servant quarters', '24-hour CCTV surveillance', 'Cross-ventilated flats'],
     specifications: [],
     heroImage: 'Jagdish-enclave-1-img_page-0001.jpg',
-    gallery: ['Jagdish-enclave-1-img_page-0001.jpg'],
+    gallery: [], // the only render is already the hero — don't repeat it below
+
     floorPlans: [{ file: 'Untitled-1-17_19_11zon.jpg', caption: 'Ground Floor Plan' }, { file: 'Untitled-1-18_18_11zon.jpg', caption: '1st to 5th Floor Plan' }],
     brochure: null,
     notes: ['The old site’s navigation listed this project as "Completed," but its own body copy described flats as still "coming up" for possession — shown here as Ongoing on that basis, matching the site’s own "5 Active Projects" count, but needs client confirmation of true status.', 'Two of the harvested hero images for this project were filenamed as stock photography rather than site photography — the aerial/day image used here is the one that reads as a genuine project render.'],

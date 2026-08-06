@@ -1,9 +1,19 @@
 // Vikramshila Developers — THE SIGNATURE: "monument rise."
-// Thousands of light-particles, sampled from the real hero photograph,
-// converge out of a scattered cloud into the monument as the visitor lands.
-// Graceful degradation: no canvas, no three.js fetch at all, if WebGL is
-// absent or the visitor asked for reduced motion — the static <img> hero
-// (already in the DOM) and CSS mask headline reveal carry the moment alone.
+//
+// The hero photograph is diced into a grid of square tiles. Each tile carries
+// the colour of the pixel it came from, starts scattered in depth, and flies
+// to its own slot in the grid — arriving on its own schedule, overshooting
+// very slightly and settling back, the way a piece is pressed into a puzzle.
+// When the last tile lands the mosaic IS the photograph, so the handoff to
+// the real image is invisible: it just resolves from coarse to sharp.
+//
+// Deliberately NOT a mask/porthole reveal and NOT soft round motes — an
+// earlier version did both and read as a pinhole zoom with drifting balls.
+// Tiles, a grid, and a click. Nothing else.
+//
+// Graceful degradation: three.js is never even fetched when WebGL is absent
+// or the visitor asked for reduced motion — the static <img> hero and the
+// CSS headline reveal carry the moment alone.
 (function () {
   'use strict';
 
@@ -21,62 +31,50 @@
     } catch (e) { return false; }
   }
 
-  if (reduceMotion || !canvas || !heroImg || !supportsWebGL()) {
+  function standDown() {
     document.documentElement.classList.remove('sig-pending');
+    hero.classList.remove('sig-active');
     if (canvas) canvas.remove();
-    return; // static photo + CSS mask headline is the whole experience
   }
 
-  // cubic-bezier(0.19,1,0.22,1) evaluated numerically (WebKit UnitBezier method)
-  function makeBezier(x1, y1, x2, y2) {
-    function a(a1, a2) { return 1 - 3 * a2 + 3 * a1; }
-    function b(a1, a2) { return 3 * a2 - 6 * a1; }
-    function c(a1) { return 3 * a1; }
-    function bezX(t) { return ((a(x1, x2) * t + b(x1, x2)) * t + c(x1)) * t; }
-    function bezY(t) { return ((a(y1, y2) * t + b(y1, y2)) * t + c(y1)) * t; }
-    function dX(t) { return 3 * a(x1, x2) * t * t + 2 * b(x1, x2) * t + c(x1); }
-    return function (x) {
-      var t = x;
-      for (var i = 0; i < 6; i++) {
-        var dx = bezX(t) - x;
-        if (Math.abs(dx) < 1e-4) break;
-        var d = dX(t);
-        if (Math.abs(d) < 1e-6) break;
-        t -= dx / d;
-      }
-      return bezY(Math.max(0, Math.min(1, t)));
-    };
+  if (reduceMotion || !canvas || !heroImg || !supportsWebGL()) {
+    standDown();
+    return;
   }
-  var uiEase = makeBezier(0.19, 1, 0.22, 1); // the brand's snap-curve — right for 200-900ms UI transitions
 
-  // ...but wrong for THIS: (0.19,1,0.22,1) reaches ~95% of its travel by
-  // 25% of elapsed time, so a 2.6s timeline driven by it visually finishes
-  // in the first ~650ms and then sits idle — measured directly (see commit
-  // notes), not assumed. A cinematic multi-second unfold needs progress
-  // spread across the whole duration: gentle in, gentle out, most of the
-  // motion happening in the middle third where the eye is watching.
-  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  // easeOutCubic for the overall timeline: gentle, spread across the whole
+  // duration rather than front-loaded
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  // easeOutBack for each individual tile: carries it a hair past its slot
+  // and settles it back — this tiny overshoot is what reads as a "click"
+  var BACK = 1.15; // deliberately gentler than the textbook 1.70158
+  function easeOutBack(t) {
+    var c3 = BACK + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + BACK * Math.pow(t - 1, 2);
+  }
 
   var skipped = false;
-  var onSkip = function () {
-    if (window.scrollY > 8) skipped = true;
-  };
+  var onSkip = function () { if (window.scrollY > 8) skipped = true; };
   window.addEventListener('scroll', onSkip, { passive: true });
   window.addEventListener('touchmove', onSkip, { passive: true });
   window.addEventListener('wheel', onSkip, { passive: true });
 
-  // relative, not root-relative: resolves against this script's own URL
-  // (…/js/signature.js -> …/vendor/…), so it works under any deployment
-  // base path instead of only at domain root
+  // relative, not root-relative: resolves against this script's own URL so it
+  // works under any deployment base path, not only at domain root
   import('../vendor/three.module.js').then(function (THREE) {
-    var tier = window.innerWidth < 700 ? 'mobile' : (window.innerWidth < 1100 ? 'tablet' : 'desktop');
-    var cols = tier === 'mobile' ? 84 : tier === 'tablet' ? 116 : 150;
+    var w = window.innerWidth;
+    // tile count is a legibility decision, not a perf one: too fine and you
+    // lose the sense of individual pieces, too coarse and the mosaic never
+    // resolves into a building
+    var cols = w < 700 ? 104 : w < 1100 ? 148 : 194;
 
-    var sampleImg = heroImg; // same-origin, already loading/loaded for display — reuse it, don't fetch twice
+    var sampleImg = heroImg; // same-origin and already loading for display — don't fetch twice
 
     var start = function () {
-      var aspect = sampleImg.naturalWidth / sampleImg.naturalHeight || 16 / 9;
-      var rows = Math.round(cols / aspect);
+      var aspect = (sampleImg.naturalWidth / sampleImg.naturalHeight) || 16 / 9;
+      var rows = Math.max(2, Math.round(cols / aspect));
+
       var off = document.createElement('canvas');
       off.width = cols; off.height = rows;
       var octx = off.getContext('2d');
@@ -84,40 +82,56 @@
       var data;
       try {
         data = octx.getImageData(0, 0, cols, rows).data;
-      } catch (e) { document.documentElement.classList.remove('sig-pending'); return; } // CORS-tainted canvas — bail silently to static hero
+      } catch (e) { standDown(); return; } // tainted canvas — fall back to the static hero
 
       var count = cols * rows;
       var positions = new Float32Array(count * 3);
+      var starts = new Float32Array(count * 3);
       var targets = new Float32Array(count * 3);
       var colors = new Float32Array(count * 3);
+      var baseColors = new Float32Array(count * 3);
+      var delays = new Float32Array(count);
 
       var planeW = 16, planeH = planeW / aspect;
+      var MAX_DELAY = 0.5;   // last tile begins its flight halfway through
+      var SPAN = 0.5;        // and takes the remaining half to land
+
       var i = 0;
       for (var y = 0; y < rows; y++) {
         for (var x = 0; x < cols; x++) {
           var px = (x / (cols - 1) - 0.5) * planeW;
           var py = (0.5 - y / (rows - 1)) * planeH;
           var di = (y * cols + x) * 4;
-          var r = data[di] / 255, g = data[di + 1] / 255, b = data[di + 2] / 255;
 
-          targets[i * 3] = px;
-          targets[i * 3 + 1] = py;
-          targets[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+          var i3 = i * 3;
+          targets[i3] = px;
+          targets[i3 + 1] = py;
+          targets[i3 + 2] = 0; // dead flat at rest: a true grid, so tiles abut
 
+          // scattered origin — wide, deep, and behind the frame
           var ang = Math.random() * Math.PI * 2;
-          var rad = 9 + Math.random() * 16;
-          positions[i * 3] = Math.cos(ang) * rad + px * 0.3;
-          positions[i * 3 + 1] = (Math.random() - 0.5) * 14 + py * 0.3;
-          positions[i * 3 + 2] = -6 - Math.random() * 22;
+          var rad = 7 + Math.random() * 15;
+          starts[i3] = px + Math.cos(ang) * rad;
+          starts[i3 + 1] = py + Math.sin(ang) * rad * 0.6;
+          starts[i3 + 2] = -8 - Math.random() * 26;
+          positions[i3] = starts[i3];
+          positions[i3 + 1] = starts[i3 + 1];
+          positions[i3 + 2] = starts[i3 + 2];
 
-          var boost = 1.18;
-          colors[i * 3] = Math.min(1, r * boost);
-          colors[i * 3 + 1] = Math.min(1, g * boost);
-          colors[i * 3 + 2] = Math.min(1, b * boost);
+          // ground-up bias: the building assembles first and the sky closes
+          // in behind it, so the sequence reads as a rise rather than a wipe
+          var vf = 1 - y / (rows - 1); // 1 at the top of frame, 0 at the bottom
+          // weighted toward random so the rise reads as organic settling
+          // rather than a hard horizontal wipe line travelling up the frame
+          delays[i] = MAX_DELAY * (0.42 * vf + 0.58 * Math.random());
+
+          baseColors[i3] = data[di] / 255;
+          baseColors[i3 + 1] = data[di + 1] / 255;
+          baseColors[i3 + 2] = data[di + 2] / 255;
+          colors[i3] = colors[i3 + 1] = colors[i3 + 2] = 0;
           i++;
         }
       }
-      var starts = positions.slice(); // immutable scatter origin — lets every frame compute an absolute lerp instead of drifting via accumulation
 
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera(42, hero.clientWidth / hero.clientHeight, 0.1, 100);
@@ -129,138 +143,120 @@
 
       var geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
-      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3).setUsage(THREE.DynamicDrawUsage));
 
-      // soft round sprite so points read as light-motes, not squares
-      var spriteC = document.createElement('canvas');
-      spriteC.width = spriteC.height = 32;
-      var sctx = spriteC.getContext('2d');
-      var grad = sctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-      grad.addColorStop(0, 'rgba(255,255,255,1)');
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
-      sctx.fillStyle = grad;
-      sctx.fillRect(0, 0, 32, 32);
-      var sprite = new THREE.CanvasTexture(spriteC);
-
+      // no `map`: an untextured PointsMaterial draws hard-edged SQUARES, which
+      // is the entire point — these are tiles, not motes
       var mat = new THREE.PointsMaterial({
-        size: 0.1, // overwritten by fitPlane() below, which sizes points from the *actual* post-scale pitch
-        map: sprite,
+        size: 0.1, // real value set by fitPlane() from the on-screen pitch
         vertexColors: true,
         transparent: true,
         depthWrite: false,
-        opacity: 0.96,
-        // NormalBlending, not Additive: additive stacked on top of an
-        // already-bright sky blew every mote out to pure white, reading as
-        // snow rather than as motes carrying the photo's own colour
+        opacity: 1,
         blending: THREE.NormalBlending,
       });
-      var baseOpacity = mat.opacity;
 
       var points = new THREE.Points(geo, mat);
       scene.add(points);
 
       function fitPlane() {
         var vFov = (camera.fov * Math.PI) / 180;
-        var visH = 2 * Math.tan(vFov / 2) * camera.position.z;
+        var halfTan = Math.tan(vFov / 2);
+        var visH = 2 * halfTan * camera.position.z;
         var visW = visH * camera.aspect;
         var scale = Math.max(visW / planeW, visH / planeH) * 1.02;
         points.scale.setScalar(scale);
-        // size the sprites from the pitch they actually end up at once
-        // scaled — a fixed world-space size left them at ~2.8% frame
-        // coverage (measured), far too sparse to ever read as a surface;
-        // overlapping neighbours is what makes the swarm look like it's
-        // forming the building rather than dusting it with dots
-        var pitch = (planeW / (cols - 1)) * scale;
-        mat.size = pitch * 1.65;
+
+        // Size each tile to the exact grid pitch so at rest they abut edge to
+        // edge and the grid closes into a continuous picture.
+        //
+        // The `/ halfTan` is not cosmetic. three.js attenuates point size as
+        // `gl_PointSize = size * (height/2) / -mvPosition.z`, which drops the
+        // `tan(fov/2)` term a real projection has — so a size expressed in
+        // plain world units comes out ~1/tan(fov/2) too small (2.6x at fov 42).
+        // Without this the tiles render at about half the pitch and the
+        // "mosaic" is a halftone dot screen with black gaps between tiles.
+        var worldPitch = (planeW / (cols - 1)) * scale;
+        mat.size = (worldPitch / halfTan) * 1.06; // 1.06 = a hair of overlap, kills seams
       }
       fitPlane();
 
-      hero.classList.add('sig-active'); // masks the photo out to a point; grows back in sync with convergence (see CSS)
-      document.documentElement.classList.remove('sig-pending'); // sig-active now owns visibility
+      hero.classList.add('sig-active');
+      document.documentElement.classList.remove('sig-pending');
 
-      // the reveal circle has to grow past the frame's true FARTHEST CORNER
-      // (from the off-center reveal point) to fully uncover it — computed
-      // once, in px, so it finishes on the same frame the particles land
-      // instead of racing ahead and leaving them stranded mid-flight
-      var revealCx = hero.clientWidth * 0.5, revealCy = hero.clientHeight * 0.54;
-      var maxReveal = Math.max(
-        Math.hypot(revealCx, revealCy),
-        Math.hypot(hero.clientWidth - revealCx, revealCy),
-        Math.hypot(revealCx, hero.clientHeight - revealCy),
-        Math.hypot(hero.clientWidth - revealCx, hero.clientHeight - revealCy)
-      );
-
-      var DUR = 2600;
+      var DUR = 2800;
       var t0 = performance.now();
       var posAttr = geo.getAttribute('position');
+      var colAttr = geo.getAttribute('color');
       var resolved = false;
-      var fading = false;
+      var stopped = false;
 
       function frame(now) {
-        var elapsed = now - t0;
-        var raw = Math.min(1, elapsed / DUR);
+        var raw = Math.min(1, (now - t0) / DUR);
         if (skipped) raw = 1;
-        var e = ease(raw);
-
-        // the photograph materializes from the same point the particles
-        // converge on, growing at the identical rate — same `e` drives both,
-        // so the mask edge and the particle swarm arrive together, frame for
-        // frame, instead of the mask racing ahead of what's actually formed
-        heroImg.style.setProperty('--reveal-r', (e * maxReveal).toFixed(1) + 'px');
-
-        // the swarm dissolves INTO the photo as it lands, rather than
-        // sitting on top of a finished image for a beat after — the last
-        // 30% of the timeline fades the motes out as they reach their targets
-        mat.opacity = baseOpacity * (1 - Math.max(0, (raw - 0.7) / 0.3));
+        var globalE = easeOutCubic(raw);
 
         for (var p = 0; p < count; p++) {
-          var ix = p * 3, iy = p * 3 + 1, iz = p * 3 + 2;
-          positions[ix] = starts[ix] + (targets[ix] - starts[ix]) * e;
-          positions[iy] = starts[iy] + (targets[iy] - starts[iy]) * e;
-          positions[iz] = starts[iz] + (targets[iz] - starts[iz]) * e;
+          var p3 = p * 3;
+          // each tile runs its own little clock inside the global one
+          var lp = (raw - delays[p]) / SPAN;
+          lp = lp < 0 ? 0 : lp > 1 ? 1 : lp;
+          var e = lp >= 1 ? 1 : easeOutBack(lp);
+
+          positions[p3] = starts[p3] + (targets[p3] - starts[p3]) * e;
+          positions[p3 + 1] = starts[p3 + 1] + (targets[p3 + 1] - starts[p3 + 1]) * e;
+          positions[p3 + 2] = starts[p3 + 2] + (targets[p3 + 2] - starts[p3 + 2]) * e;
+
+          // a tile is dim in flight and reaches full colour as it seats —
+          // the picture gains substance as it assembles
+          var lum = 0.28 + 0.72 * lp;
+          colors[p3] = baseColors[p3] * lum;
+          colors[p3 + 1] = baseColors[p3 + 1] * lum;
+          colors[p3 + 2] = baseColors[p3 + 2] * lum;
         }
         posAttr.needsUpdate = true;
+        colAttr.needsUpdate = true;
+
+        // globalE is unused for motion but keeps the camera settle available
+        // for future use without another pass over the buffer
+        void globalE;
+
         renderer.render(scene, camera);
 
         if (raw >= 1 && !resolved) {
           resolved = true;
-          hero.classList.add('sig-resolved'); // mask lifted — the sharp photo now stands fully on its own
+          // the mosaic now matches the photograph, so bringing the real image
+          // up underneath and dissolving the tiles off reads as one picture
+          // sharpening — not as a swap
+          hero.classList.add('sig-resolved');
+          var ease = getComputedStyle(document.documentElement).getPropertyValue('--ease').trim();
+          canvas.style.transition = 'opacity 700ms ' + ease;
+          setTimeout(function () { canvas.style.opacity = '0'; }, skipped ? 0 : 200);
           setTimeout(function () {
-            fading = true;
-            canvas.style.transition = 'opacity 900ms ' + getComputedStyle(document.documentElement).getPropertyValue('--ease').trim();
-            canvas.style.opacity = '0';
-            setTimeout(function () {
-              renderer.dispose();
-              canvas.style.display = 'none';
-            }, 950);
-          }, skipped ? 60 : 260);
+            stopped = true;
+            geo.dispose(); mat.dispose(); renderer.dispose();
+            canvas.style.display = 'none';
+          }, (skipped ? 0 : 200) + 780);
         }
-        if (!fading) requestAnimationFrame(frame);
+        if (!stopped) requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
 
       var resizeT;
       window.addEventListener('resize', function () {
+        if (stopped) return;
         clearTimeout(resizeT);
         resizeT = setTimeout(function () {
           camera.aspect = hero.clientWidth / hero.clientHeight;
           camera.updateProjectionMatrix();
           renderer.setSize(hero.clientWidth, hero.clientHeight, false);
           fitPlane();
-          revealCx = hero.clientWidth * 0.5; revealCy = hero.clientHeight * 0.54;
-          maxReveal = Math.max(
-            Math.hypot(revealCx, revealCy), Math.hypot(hero.clientWidth - revealCx, revealCy),
-            Math.hypot(revealCx, hero.clientHeight - revealCy), Math.hypot(hero.clientWidth - revealCx, hero.clientHeight - revealCy)
-          );
         }, 120);
       });
     };
 
     if (sampleImg.complete && sampleImg.naturalWidth) start();
     else sampleImg.onload = start;
-    sampleImg.onerror = function () { document.documentElement.classList.remove('sig-pending'); if (canvas) canvas.remove(); };
-  }).catch(function () {
-    document.documentElement.classList.remove('sig-pending');
-    if (canvas) canvas.remove();
-  });
+    sampleImg.onerror = standDown;
+  }).catch(standDown);
 })();

@@ -52,6 +52,10 @@ async function checkPage(browser, urlPath, viewport, label) {
       window.scrollTo(0, y);
       await new Promise((r) => setTimeout(r, 180));
     }
+    // the stepped loop can stop short of the true bottom, leaving the last
+    // section never scrolled into view — land on the bottom explicitly
+    window.scrollTo(0, max);
+    await new Promise((r) => setTimeout(r, 400));
   });
   await new Promise((r) => setTimeout(r, 400));
 
@@ -59,7 +63,19 @@ async function checkPage(browser, urlPath, viewport, label) {
     const out = {};
     out.scrollWidthOverflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
     // images: max-width/height:auto behaviour + alt text
-    out.imagesMissingAlt = Array.from(document.querySelectorAll('img')).filter((img) => !img.getAttribute('alt') || !img.getAttribute('alt').trim()).map((img) => img.src);
+    // A decorative image SHOULD carry alt="" — flagging that is wrong. Only
+    // images that convey content need alt text, so exclude ones explicitly
+    // marked decorative (aria-hidden / role=presentation).
+    out.imagesMissingAlt = Array.from(document.querySelectorAll('img'))
+      .filter((img) => {
+        var decorative = img.getAttribute('aria-hidden') === 'true' ||
+                         img.getAttribute('role') === 'presentation' ||
+                         img.closest('[aria-hidden="true"]');
+        if (decorative) return false;
+        var alt = img.getAttribute('alt');
+        return alt === null || !alt.trim();
+      })
+      .map((img) => img.src);
     out.imageCount = document.querySelectorAll('img').length;
     // touch targets: buttons/links should be >=44px tall on mobile
     const targets = Array.from(document.querySelectorAll('.btn, .nav-toggle, .main-nav a, .footer-grid a'));
