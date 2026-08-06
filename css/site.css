@@ -2,18 +2,18 @@
 
 @font-face{
   font-family:'Fraunces';
-  src:url('/fonts/Fraunces-Roman-Variable.woff2') format('woff2-variations'), url('/fonts/Fraunces-Roman-Variable.woff2') format('woff2');
+  src:url('../fonts/Fraunces-Roman-Variable.woff2') format('woff2-variations'), url('../fonts/Fraunces-Roman-Variable.woff2') format('woff2');
   font-weight:300 600; font-style:normal; font-display:swap;
   font-named-instance:'Regular';
 }
 @font-face{
   font-family:'Fraunces';
-  src:url('/fonts/Fraunces-Italic-Variable.woff2') format('woff2-variations'), url('/fonts/Fraunces-Italic-Variable.woff2') format('woff2');
+  src:url('../fonts/Fraunces-Italic-Variable.woff2') format('woff2-variations'), url('../fonts/Fraunces-Italic-Variable.woff2') format('woff2');
   font-weight:300 600; font-style:italic; font-display:swap;
 }
 @font-face{
   font-family:'Inter';
-  src:url('/fonts/Inter-Variable.woff2') format('woff2-variations'), url('/fonts/Inter-Variable.woff2') format('woff2');
+  src:url('../fonts/Inter-Variable.woff2') format('woff2-variations'), url('../fonts/Inter-Variable.woff2') format('woff2');
   font-weight:400 700; font-style:normal; font-display:swap;
 }
 
@@ -214,7 +214,7 @@ html.sig-pending [data-signature-hero] .hero-media img{opacity:0}
 .featured-projects{position:relative;isolation:isolate}
 .featured-projects::before{
   content:'';position:absolute;inset:0;z-index:-1;
-  background:url('/images/texture/stone-plaster.jpg') center/900px repeat;
+  background:url('../images/texture/stone-plaster.jpg') center/900px repeat;
   opacity:0.05;mix-blend-mode:multiply;
 }
 

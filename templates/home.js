@@ -1,12 +1,12 @@
 const site = require('../content/site');
 const { RESIDENTIAL, HOSPITALITY } = require('../content/projects');
-const { esc } = require('./layout');
+const { esc, u } = require('./layout');
 
 function heroSection() {
   return `
 <section class="hero" data-signature-hero>
   <div class="hero-media">
-    <img src="/images/optimized/hero-monument-clean.jpg" alt="Shivalaya residence at dusk, warm-lit windows behind a palm-lined Deoghar street" fetchpriority="high">
+    <img src="${u('/images/optimized/hero-monument-clean.jpg')}" alt="Shivalaya residence at dusk, warm-lit windows behind a palm-lined Deoghar street" fetchpriority="high">
   </div>
   <div class="hero-scrim"></div>
   <canvas id="signature-canvas" aria-hidden="true"></canvas>
@@ -19,7 +19,7 @@ function heroSection() {
       </h1>
       <p class="hero-sub on-ink">Vikramshila Developers builds the homes a family will hand down for generations — named, deliberately, after the university that once made this ground legendary.</p>
       <div class="hero-actions">
-        <a class="btn btn-brass" href="/our-projects/">View Our Projects</a>
+        <a class="btn btn-brass" href="${u('/our-projects/')}">View Our Projects</a>
         <a class="btn btn-ghost" href="${site.phones.primaryHref}">Call ${site.phones.primary}</a>
       </div>
     </div>
@@ -69,14 +69,14 @@ function standardsSection() {
 function featuredProjects() {
   var rows = RESIDENTIAL.slice(0, 6).map((p, i) => `
     <div class="proj-row${i % 2 ? ' flip' : ''} reveal">
-      <div class="proj-media parallax"><img src="/images/optimized/${p.heroImage}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy" width="1200" height="900"></div>
+      <div class="proj-media parallax"><img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy" width="1200" height="900"></div>
       <div class="proj-copy">
         <span class="proj-index-mark">0${i + 1}</span>
         <div class="proj-index">${esc(p.status)}</div>
         <h3 class="proj-name">${esc(p.name)}</h3>
         <div class="proj-loc">${esc(p.location)}</div>
         <div class="proj-tags"><span class="tag">${esc(p.unitSummary)}</span></div>
-        <a class="proj-link" href="/${p.slug}/">View Project <span class="arrow">&rarr;</span></a>
+        <a class="proj-link" href="${u('/' + p.slug + '/')}">View Project <span class="arrow">&rarr;</span></a>
       </div>
     </div>`).join('\n');
 
@@ -89,7 +89,7 @@ function featuredProjects() {
     </div>
     ${rows}
     <div class="reveal" style="margin-top:56px;text-align:center">
-      <a class="btn btn-outline" href="/our-projects/">See all nine developments</a>
+      <a class="btn btn-outline" href="${u('/our-projects/')}">See all nine developments</a>
     </div>
   </div>
 </section>`;
@@ -119,10 +119,10 @@ function aboutBand() {
       <div class="eyebrow">About Vikramshila</div>
       <h2 class="display-2" style="margin-top:18px">${esc(site.philosophy)}</h2>
       <p class="lede" style="margin-top:22px">${esc(site.aboutCopy[0])}</p>
-      <a class="proj-link" href="/about-us/" style="margin-top:28px">Our Story <span class="arrow">&rarr;</span></a>
+      <a class="proj-link" href="${u('/about-us/')}" style="margin-top:28px">Our Story <span class="arrow">&rarr;</span></a>
     </div>
     <div class="proj-media reveal" style="aspect-ratio:5/4">
-      <img src="/images/optimized/0000_23_Chandeshwar_Apartment-05-01-2_11zon.jpg" alt="Chandeshwar Apartment, Bhagalpur" loading="lazy">
+      <img src="${u('/images/optimized/0000_23_Chandeshwar_Apartment-05-01-2_11zon.jpg')}" alt="Chandeshwar Apartment, Bhagalpur" loading="lazy">
     </div>
   </div>
 </section>`;

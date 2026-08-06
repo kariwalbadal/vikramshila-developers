@@ -65,7 +65,10 @@
   window.addEventListener('touchmove', onSkip, { passive: true });
   window.addEventListener('wheel', onSkip, { passive: true });
 
-  import('/vendor/three.module.js').then(function (THREE) {
+  // relative, not root-relative: resolves against this script's own URL
+  // (…/js/signature.js -> …/vendor/…), so it works under any deployment
+  // base path instead of only at domain root
+  import('../vendor/three.module.js').then(function (THREE) {
     var tier = window.innerWidth < 700 ? 'mobile' : (window.innerWidth < 1100 ? 'tablet' : 'desktop');
     var cols = tier === 'mobile' ? 84 : tier === 'tablet' ? 116 : 150;
 

@@ -7,7 +7,7 @@ const path = require('path');
 const puppeteer = require('puppeteer-core');
 
 const ROOT = path.resolve(__dirname, '..');
-const BASE = process.env.BASE_URL || 'http://localhost:8090';
+const BASE = process.env.BASE_URL || ('http://localhost:8090' + require('../content/site').basePath);
 const OUT = path.join(ROOT, 'verify-out');
 fs.mkdirSync(OUT, { recursive: true });
 

@@ -4,9 +4,15 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// GitHub Pages serves this repo under /vikramshila-developers/, not domain
+// root — every same-origin href/src must carry that prefix (see content/site.js).
+function u(p) {
+  return site.basePath + p;
+}
+
 function navLink(item, path) {
   var active = item.href === path ? ' is-active' : '';
-  return `<a href="${item.href}" class="${active.trim()}">${esc(item.label)}</a>`;
+  return `<a href="${u(item.href)}" class="${active.trim()}">${esc(item.label)}</a>`;
 }
 
 function header(path) {
@@ -14,13 +20,13 @@ function header(path) {
 <div class="scroll-progress"></div>
 <header class="site-header">
   <div class="header-pill">
-    <a href="/" class="brand">${site.shortName}<small>Bihar, Jharkhand &amp; Bengal</small></a>
+    <a href="${u('/')}" class="brand">${site.shortName}<small>Bihar, Jharkhand &amp; Bengal</small></a>
     <nav class="main-nav" aria-label="Primary">
       ${site.nav.map((n) => navLink(n, path)).join('\n      ')}
     </nav>
     <div class="header-cta">
       <a class="btn btn-ghost header-cta-call" href="${site.phones.primaryHref}" aria-label="Call ${site.phones.primary}"><span aria-hidden="true">&#9742;</span><span class="label">${site.phones.primary}</span></a>
-      <a class="btn btn-brass" href="/contact-us/">Enquire</a>
+      <a class="btn btn-brass" href="${u('/contact-us/')}">Enquire</a>
       <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
         <span></span>
       </button>
@@ -28,7 +34,7 @@ function header(path) {
   </div>
 </header>
 <div class="mobile-nav">
-  ${site.nav.map((n) => `<a href="${n.href}">${esc(n.label)}</a>`).join('\n  ')}
+  ${site.nav.map((n) => `<a href="${u(n.href)}">${esc(n.label)}</a>`).join('\n  ')}
   <div class="mobile-cta">
     <a class="btn btn-brass" href="${site.phones.primaryHref}">Call ${site.phones.primary}</a>
     <a class="btn btn-ghost" href="${site.whatsapp.href}" target="_blank" rel="noopener">WhatsApp</a>
@@ -54,8 +60,8 @@ function footer() {
     </div>
     <div>
       <h5>Explore</h5>
-      ${site.nav.map((n) => `<a href="${n.href}">${esc(n.label)}</a>`).join('\n      ')}
-      <a href="/chinmaye-in/">Hospitality — Hotel Chinmaye Inn</a>
+      ${site.nav.map((n) => `<a href="${u(n.href)}">${esc(n.label)}</a>`).join('\n      ')}
+      <a href="${u('/chinmaye-in/')}">Hospitality — Hotel Chinmaye Inn</a>
     </div>
     <div>
       <h5>Contact</h5>
@@ -72,7 +78,7 @@ function footer() {
   </div>
   <div class="wrap footer-bottom">
     <span>&copy; ${new Date().getFullYear()} Vikramshila Developers Pvt. Ltd.</span>
-    <span><a href="/privacy-policy/">Privacy Policy</a> &middot; <a href="/terms-conditions/">Terms &amp; Conditions</a></span>
+    <span><a href="${u('/privacy-policy/')}">Privacy Policy</a> &middot; <a href="${u('/terms-conditions/')}">Terms &amp; Conditions</a></span>
     <span style="flex:1 1 100%;color:var(--text-on-ink-soft)">RERA registration numbers for these developments are not yet published here — please ask us for the current registration status of any project before you book.</span>
   </div>
 </footer>`;
@@ -106,7 +112,7 @@ ${hasSignature ? `<script>(function(){
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="${u('/favicon.svg')}" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.shortName)}">
 <meta property="og:title" content="${esc(title)}">
@@ -117,10 +123,10 @@ ${hasSignature ? `<script>(function(){
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${ogImage}">
-<link rel="preload" href="/fonts/Fraunces-Roman-Variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/tokens.css">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="preload" href="${u('/fonts/Fraunces-Roman-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${u('/fonts/Inter-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="${u('/css/tokens.css')}">
+<link rel="stylesheet" href="${u('/css/site.css')}">
 ${jsonLd.map((obj) => `<script type="application/ld+json">${JSON.stringify(obj)}</script>`).join('\n')}
 ${extraHead}
 </head>
@@ -129,10 +135,10 @@ ${header(path)}
 ${opts.body}
 ${footer()}
 ${mobileActionBar()}
-<script src="/js/site.js" defer></script>
-${scripts.map((s) => `<script src="${s}" defer></script>`).join('\n')}
+<script src="${u('/js/site.js')}" defer></script>
+${scripts.map((s) => `<script src="${u(s)}" defer></script>`).join('\n')}
 </body>
 </html>`;
 }
 
-module.exports = { layout, esc };
+module.exports = { layout, esc, u };

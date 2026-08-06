@@ -1,10 +1,10 @@
 const site = require('../content/site');
-const { esc } = require('./layout');
+const { esc, u } = require('./layout');
 
 module.exports = function aboutPage() {
   var body = `
 <section class="hero" style="min-height:64svh">
-  <div class="hero-media"><img src="/images/optimized/Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg" alt="Chandeshwar Apartment at dusk, Bhagalpur" fetchpriority="high"></div>
+  <div class="hero-media"><img src="${u('/images/optimized/Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg')}" alt="Chandeshwar Apartment at dusk, Bhagalpur" fetchpriority="high"></div>
   <div class="hero-scrim"></div>
   <div class="hero-inner">
     <div class="content">

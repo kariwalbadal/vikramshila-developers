@@ -1,10 +1,10 @@
 const { RESIDENTIAL, HOSPITALITY, STUBS } = require('../content/projects');
-const { esc } = require('./layout');
+const { esc, u } = require('./layout');
 
 module.exports = function projectsListingPage() {
   var cards = RESIDENTIAL.concat(HOSPITALITY).map((p, i) => `
-    <a href="/${p.slug}/" class="proj-row reveal" style="text-decoration:none;grid-template-columns:1fr;display:grid">
-      <div class="proj-media"><img src="/images/optimized/${p.heroImage}" alt="${esc(p.name)}" loading="lazy"></div>
+    <a href="${u('/' + p.slug + '/')}" class="proj-row reveal" style="text-decoration:none;grid-template-columns:1fr;display:grid">
+      <div class="proj-media"><img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}" loading="lazy"></div>
       <div class="proj-copy" style="margin-top:20px">
         <div class="proj-index">0${i + 1} &middot; ${esc(p.status)}</div>
         <h3 class="proj-name" style="font-size:1.7rem;margin-top:10px">${esc(p.name)}</h3>
@@ -20,7 +20,7 @@ module.exports = function projectsListingPage() {
 
   var body = `
 <section class="hero" style="min-height:56svh">
-  <div class="hero-media"><img src="/images/optimized/all-project-image-04-scaled-1.jpg" alt="A Vikramshila Developers residence" fetchpriority="high"></div>
+  <div class="hero-media"><img src="${u('/images/optimized/all-project-image-04-scaled-1.jpg')}" alt="A Vikramshila Developers residence" fetchpriority="high"></div>
   <div class="hero-scrim"></div>
   <div class="hero-inner">
     <div class="content">

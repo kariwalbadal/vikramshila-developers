@@ -1,6 +1,14 @@
 // Site-wide facts — every value here is traceable to HARVEST.md. Nothing invented.
+const SITE_URL = 'https://kariwalbadal.github.io/vikramshila-developers';
+// GitHub Pages project sites are served under /<repo>/, not domain root — every
+// same-origin href/src in the templates must carry this prefix or it 404s live
+// while looking fine on a local server mounted at root. Derived once, here,
+// so there is exactly one place that knows the deployment path.
+const BASE_PATH = new URL(SITE_URL).pathname.replace(/\/$/, '');
+
 module.exports = {
-  siteUrl: 'https://kariwalbadal.github.io/vikramshila-developers',
+  siteUrl: SITE_URL,
+  basePath: BASE_PATH,
   company: 'Vikramshila Developers Pvt. Ltd.',
   shortName: 'Vikramshila Developers',
   philosophy: 'Creation, Not Construction',

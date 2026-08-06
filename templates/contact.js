@@ -1,11 +1,11 @@
 const site = require('../content/site');
 const { RESIDENTIAL } = require('../content/projects');
-const { esc } = require('./layout');
+const { esc, u } = require('./layout');
 
 module.exports = function contactPage() {
   var body = `
 <section class="hero" style="min-height:52svh">
-  <div class="hero-media"><img src="/images/optimized/all-project-image-06-scaled-1.jpg" alt="A Vikramshila Developers residence" fetchpriority="high"></div>
+  <div class="hero-media"><img src="${u('/images/optimized/all-project-image-06-scaled-1.jpg')}" alt="A Vikramshila Developers residence" fetchpriority="high"></div>
   <div class="hero-scrim"></div>
   <div class="hero-inner">
     <div class="content">

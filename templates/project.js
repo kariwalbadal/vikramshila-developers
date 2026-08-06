@@ -1,10 +1,10 @@
 const site = require('../content/site');
-const { esc } = require('./layout');
+const { esc, u } = require('./layout');
 
 function heroSection(p) {
   return `
 <section class="hero" style="min-height:82svh">
-  <div class="hero-media"><img src="/images/optimized/${p.heroImage}" alt="${esc(p.name)}, ${esc(p.location)} — hero view" fetchpriority="high"></div>
+  <div class="hero-media"><img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — hero view" fetchpriority="high"></div>
   <div class="hero-scrim"></div>
   <div class="hero-inner">
     <div class="content">
@@ -81,8 +81,8 @@ function specSection(p) {
 }
 
 function gallerySection(p) {
-  var imgs = (p.gallery || []).map((f) => `<a href="/images/optimized/${f}" target="_blank" rel="noopener"><img src="/images/optimized/${f}" alt="${esc(p.name)} — photograph" loading="lazy"></a>`).join('');
-  var plans = (p.floorPlans || []).map((fp) => `<figure><a href="/images/optimized/${fp.file}" target="_blank" rel="noopener"><img src="/images/optimized/${fp.file}" alt="${esc(p.name)} — ${esc(fp.caption)}" loading="lazy"></a><figcaption>${esc(fp.caption)}</figcaption></figure>`).join('');
+  var imgs = (p.gallery || []).map((f) => `<a href="${u('/images/optimized/' + f)}" target="_blank" rel="noopener"><img src="${u('/images/optimized/' + f)}" alt="${esc(p.name)} — photograph" loading="lazy"></a>`).join('');
+  var plans = (p.floorPlans || []).map((fp) => `<figure><a href="${u('/images/optimized/' + fp.file)}" target="_blank" rel="noopener"><img src="${u('/images/optimized/' + fp.file)}" alt="${esc(p.name)} — ${esc(fp.caption)}" loading="lazy"></a><figcaption>${esc(fp.caption)}</figcaption></figure>`).join('');
   var out = '';
   if (imgs) out += `
 <section class="section section-ink">
