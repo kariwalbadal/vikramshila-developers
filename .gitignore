@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+.DS_Store
+*.log
+/verify-out/
+
+# Raw harvest image dump (Phase 0 source pool + per-page hardlinks) — every
+# image actually used by the live site is already in /images/optimized/.
+# manifest.json (the inventory) and harvest/raw/ (the HTML mirror) are kept
+# for provenance; the ~89MB of raw/duplicate/unused originals are not.
+/assets/harvest/_pool/
+/assets/harvest/*/
+!/assets/harvest/manifest.json

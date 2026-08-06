@@ -1,0 +1,55 @@
+/* Vikramshila Developers — design tokens
+   Palette derived from the harvested renders (dusk sky, brass window-light)
+   and the Vikramshila namesake (stone monastery, manuscript, brass). */
+:root{
+  /* ink / stone */
+  --ink-950:#100e0c;
+  --ink-900:#161310;
+  --ink-800:#201b16;
+  --ink-700:#332b23;
+  --ink-600:#4a3f34;
+
+  /* brass accent — used with discipline */
+  --brass-300:#e4c78a;
+  --brass-400:#d6b876;
+  --brass-500:#c19a4d;
+  --brass-600:#a37f3a;
+  --brass-700:#8a692e;
+
+  /* paper — fact bands */
+  --paper-100:#faf7f0;
+  --paper-200:#f4eee1;
+  --paper-300:#ece2cc;
+
+  --cream:#efe7d6;
+  --white:#ffffff;
+
+  /* semantic */
+  --bg:var(--paper-100);
+  --bg-ink:var(--ink-900);
+  --text:var(--ink-800);
+  --text-soft:#5b5148;
+  --text-on-ink:var(--cream);
+  --text-on-ink-soft:#c7bba3;
+  --accent:var(--brass-500);
+  --accent-strong:var(--brass-600);
+  --border-hairline:rgba(16,14,12,0.14);
+  --border-hairline-on-ink:rgba(239,231,214,0.22);
+
+  /* type */
+  --font-display:'Fraunces', 'Iowan Old Style', 'Georgia', serif;
+  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* radius — exactly two values */
+  --radius-sm:4px;
+  --radius-md:10px;
+
+  /* one shadow style */
+  --shadow:0 24px 60px -24px rgba(16,14,12,0.55);
+
+  /* one easing curve */
+  --ease:cubic-bezier(0.19,1,0.22,1);
+
+  --container:1280px;
+  --gutter:clamp(20px, 5vw, 64px);
+}

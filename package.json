@@ -1,0 +1,14 @@
+{
+  "name": "vikramshila-developers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vikramshila Developers — static site build + verification tooling. The shipped site itself is zero-dependency vanilla HTML/CSS/JS; devDependencies here are build-time only (never loaded by a visitor).",
+  "scripts": {
+    "build": "node tools/build.js",
+    "serve": "node tools/serve.js 8090",
+    "verify": "node tools/verify.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.0.0"
+  }
+}

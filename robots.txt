@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kariwalbadal.github.io/vikramshila-developers/sitemap.xml
