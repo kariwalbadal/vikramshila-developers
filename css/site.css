@@ -134,6 +134,13 @@ html.sig-pending [data-signature-hero] .hero-media img{opacity:0}
    pinhole zoom.) */
 .hero.sig-active .hero-media img{opacity:0}
 .hero.sig-active.sig-resolved .hero-media img{opacity:1;transition:opacity 700ms var(--ease)}
+/* the landing moment: a slow, confident push-in on the photograph while the
+   headline rises — no overlay, nothing obscured */
+.hero[data-hero] .hero-media img{transform:scale(1.07);transition:transform 3.2s var(--ease)}
+.hero[data-hero].is-loaded .hero-media img{transform:scale(1)}
+@media (prefers-reduced-motion:reduce){
+  .hero[data-hero] .hero-media img{transform:none;transition:none}
+}
 .hero-scrim{position:absolute;inset:0;z-index:2;background:
   linear-gradient(90deg,rgba(16,14,12,0.55) 0%,rgba(16,14,12,0.22) 44%,rgba(16,14,12,0) 68%),
   linear-gradient(180deg,rgba(16,14,12,0.15) 0%,rgba(16,14,12,0.12) 38%,rgba(16,14,12,0.74) 82%,rgba(16,14,12,0.9) 100%)}

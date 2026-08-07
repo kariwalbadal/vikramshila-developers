@@ -4,11 +4,15 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- hero headline load choreography (word-masked lines) ---------- */
+  /* ---------- hero load choreography: slow push-in + masked line rise ---------- */
   var heroTitle = document.querySelector('.hero-title');
-  if (heroTitle) {
+  var heroSection = document.querySelector('[data-hero]');
+  if (heroTitle || heroSection) {
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { heroTitle.classList.add('is-loaded'); });
+      requestAnimationFrame(function () {
+        if (heroTitle) heroTitle.classList.add('is-loaded');
+        if (heroSection) heroSection.classList.add('is-loaded');
+      });
     });
   }
 

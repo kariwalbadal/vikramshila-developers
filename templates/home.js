@@ -4,12 +4,11 @@ const { esc, u } = require('./layout');
 
 function heroSection() {
   return `
-<section class="hero" data-signature-hero>
+<section class="hero" data-hero>
   <div class="hero-media">
     <img src="${u('/images/optimized/hero-monument-clean.jpg')}" alt="Shivalaya residence at dusk, warm-lit windows behind a palm-lined Deoghar street" fetchpriority="high">
   </div>
   <div class="hero-scrim"></div>
-  <canvas id="signature-canvas" aria-hidden="true"></canvas>
   <div class="hero-inner">
     <div class="content">
       <div class="hero-kicker">Bihar, Jharkhand &amp; Bengal &middot; Est. over a decade ago</div>
@@ -162,5 +161,11 @@ function enquiry() {
 
 module.exports = function homePage() {
   var body = heroSection() + marquee() + statement() + standardsSection() + featuredProjects() + factVitrine() + aboutBand() + enquiry();
-  return { body: body, scripts: ['/js/signature.js'] };
+  // The particle/tile signature is deliberately NOT loaded. Three versions of
+  // it (pinhole mask, fine tiles, coarse tiles) all ended up obscuring the
+  // photograph and the headline behind a field of noise for 2+ seconds, which
+  // made the first impression worse, not better. The hero now does what the
+  // reference class actually does: hold a strong photograph, push in slowly,
+  // and let the type arrive. js/signature.js is kept in the repo but unused.
+  return { body: body, scripts: [] };
 };
