@@ -3,12 +3,15 @@ const { esc } = require('./layout');
 
 function legalPage(opts) {
   var body = `
-<section class="section section-paper" style="padding-top:calc(120px + clamp(24px,6vw,64px))">
+<section class="page-head">
   <div class="wrap" style="max-width:760px">
-    <div class="eyebrow">${esc(opts.eyebrow)}</div>
-    <h1 class="display-2" style="margin-top:18px">${esc(opts.title)}</h1>
-    <p style="margin-top:14px;color:var(--text-soft);font-size:13px">Last updated: ${esc(opts.updated)}</p>
-    <div style="margin-top:40px;color:var(--text-soft);line-height:1.8">${opts.html}</div>
+    <div class="art-kicker"><span class="k">${esc(opts.eyebrow)}</span><span class="r">Last updated: ${esc(opts.updated)}</span></div>
+    <h1>${esc(opts.title)}</h1>
+  </div>
+</section>
+<section class="section-tight">
+  <div class="wrap" style="max-width:760px">
+    <div style="color:var(--text-soft);line-height:1.8;font-size:14.5px">${opts.html}</div>
   </div>
 </section>`;
   return { body: body, scripts: [] };

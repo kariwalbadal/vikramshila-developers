@@ -3,48 +3,73 @@ const { esc, u } = require('./layout');
 
 module.exports = function aboutPage() {
   var body = `
-<section class="hero" style="min-height:64svh">
-  <div class="hero-media"><img src="${u('/images/optimized/Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg')}" alt="Chandeshwar Apartment at dusk, Bhagalpur" fetchpriority="high"></div>
-  <div class="hero-scrim"></div>
-  <div class="hero-inner">
-    <div class="content">
-      <div class="hero-kicker">About Vikramshila</div>
-      <h1 class="hero-title">${esc(site.philosophy)}</h1>
+<section class="page-head">
+  <div class="wrap">
+    <div class="art-kicker">
+      <span class="k">About Vikramshila</span>
+      <span class="r">Est. over a decade ago &middot; Bhagalpur</span>
+    </div>
+    <h1>${esc(site.philosophy)}.</h1>
+  </div>
+</section>
+
+<figure style="margin:0">
+  <div class="art-plate is-loaded">
+    <img src="${u('/images/optimized/Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg')}" alt="Chandeshwar Apartment at dusk, Bhagalpur" fetchpriority="high">
+  </div>
+  <figcaption class="wrap"><span class="plate-cap"><span><span class="num">Fig. 01</span> &mdash; Chandeshwar Apartment, Bhagalpur, at dusk</span><span>Developer&rsquo;s render</span></span></figcaption>
+</figure>
+
+<section class="section">
+  <div class="wrap">
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Company</span>
+      <span class="sec-note">Residential &middot; Commercial &middot; Retail</span>
+    </div>
+    <div class="letter reveal">
+      ${site.aboutCopy.map((p, i) => `<p${i === 0 ? ' class="dropcap"' : ''}>${esc(p)}</p>`).join('\n      ')}
     </div>
   </div>
 </section>
 
-<section class="section section-paper">
-  <div class="wrap">
-    ${site.aboutCopy.map((p) => `<p class="lede reveal" style="max-width:60ch;margin-bottom:24px;font-size:1.1rem">${esc(p)}</p>`).join('\n')}
-  </div>
-</section>
-
-<section class="section section-ink" style="position:relative;overflow:hidden">
-  <div class="ghost-word reveal" style="bottom:4%;right:2%">Legend</div>
-  <div class="wrap" style="position:relative;z-index:1">
-    <div class="eyebrow" style="margin-bottom:24px">The Namesake</div>
-    <p class="display-3 reveal" style="font-weight:400;max-width:60ch">${esc(site.namesake)}</p>
-  </div>
-</section>
-
-<section class="section section-paper">
-  <div class="wrap">
-    <div class="eyebrow" style="margin-bottom:28px">In Numbers</div>
-    <div class="vitrine reveal">
-      ${site.stats.map((s) => `<div class="vitrine-cell"><span class="stat" data-countup="${s.value}" data-suffix="${esc(s.suffix)}">0</span><span class="label">${esc(s.label)}</span></div>`).join('')}
+<section class="section-tight section-shade">
+  <div class="wrap" style="padding-block:clamp(28px,4vw,44px)">
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Namesake</span>
+      <span class="sec-note">Why the name</span>
     </div>
-    <p style="margin-top:20px;font-size:12.5px;color:var(--text-soft)">Figures as published by Vikramshila Developers.</p>
+    <div class="pull-quote reveal" style="border-top:0;padding-top:0">
+      <p>${esc(site.namesakeShort)}</p>
+    </div>
+    <div class="letter reveal">
+      <p class="muted">${esc(site.namesake)}</p>
+      <div class="letter-sign">&mdash; Vikramshila Developers Pvt. Ltd., Bhagalpur</div>
+    </div>
   </div>
 </section>
 
-<section class="section section-ink enquiry">
+<section class="section-tight">
   <div class="wrap">
-    <div class="eyebrow">Get In Touch</div>
-    <h2 class="display-2" style="margin-top:18px">Visit the office, or call ahead.</h2>
-    <p class="lede" style="margin-top:14px">${esc(site.address.full)}</p>
-    <div class="contact-strip">
-      <div class="row"><span class="copy-num on-ink" style="user-select:all">${site.phones.primary}</span><a class="btn btn-ghost" href="${site.phones.primaryHref}">Call</a><a class="btn btn-brass" href="${site.whatsapp.href}" target="_blank" rel="noopener">WhatsApp</a></div>
+    <div class="sec-row reveal" style="margin-bottom:0;border-top:0;padding-top:0">
+      <span class="eyebrow">In Numbers</span>
+    </div>
+    <div class="numrow reveal" style="margin-top:14px">
+      ${site.stats.map((s) => `<div><span class="stat" data-countup="${s.value}" data-suffix="${esc(s.suffix)}">0</span><span class="label">${esc(s.label)}</span></div>`).join('')}
+    </div>
+    <p style="margin-top:12px;font-size:11px;color:var(--text-soft)">Figures as published by Vikramshila Developers.</p>
+  </div>
+</section>
+
+<section class="section section-shade">
+  <div class="wrap">
+    <div class="sec-row reveal">
+      <span class="eyebrow">Visit</span>
+      <span class="sec-note">Or call ahead</span>
+    </div>
+    <div class="contact-table reveal" style="max-width:640px">
+      <div><span class="k">Office</span><span class="v" style="max-width:36ch">${esc(site.address.full)}</span></div>
+      <div><span class="k">Phone</span><span class="v"><a href="${site.phones.primaryHref}">${site.phones.primary}</a></span></div>
+      <div><span class="k">WhatsApp</span><span class="v"><a href="${site.whatsapp.href}" target="_blank" rel="noopener">${site.whatsapp.label}</a></span></div>
     </div>
   </div>
 </section>`;

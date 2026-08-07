@@ -83,9 +83,13 @@ async function checkPage(browser, urlPath, viewport, label) {
       const r = el.getBoundingClientRect();
       return r.height > 0 && r.height < 44;
     }).map((el) => el.className + ' :: ' + (el.textContent || '').trim().slice(0, 30) + ' h=' + Math.round(el.getBoundingClientRect().height));
-    // header CTA visible outside collapsible menu
-    const call = document.querySelector('.header-cta-call');
-    out.headerCtaVisible = call ? getComputedStyle(call).display !== 'none' && call.getBoundingClientRect().width > 0 : false;
+    // a phone CTA must be reachable without opening any menu: a visible
+    // tel: link in the topbar/masthead/compact bar or mobile action bar
+    const telLinks = Array.from(document.querySelectorAll('.topbar a[href^="tel:"], header a[href^="tel:"], .compact-bar a[href^="tel:"], .mobile-actionbar a[href^="tel:"]'));
+    out.headerCtaVisible = telLinks.some((el) => {
+      const cs = getComputedStyle(el); const r = el.getBoundingClientRect();
+      return cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+    });
     // masked headings: every .mask must be observed / become visible eventually — check none stuck at opacity 0 zero-height after wait
     const unrevealedEls = Array.from(document.querySelectorAll('.reveal:not(.is-visible), .mask:not(.is-visible)'));
     out.unrevealed = unrevealedEls.length;

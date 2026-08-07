@@ -1,65 +1,55 @@
-/* Vikramshila Developers — design tokens
-   Palette derived from the harvested renders (dusk sky, brass window-light)
-   and the Vikramshila namesake (stone monastery, manuscript, brass). */
+/* Vikramshila Developers — design tokens.
+   The accent is the company's own brand teal, sampled from their VD mark
+   (harvest: cropped-vd-logo-06-scaled-1.jpg → #1e9fa9). The display face is a
+   Didone (Bodoni Moda) because the "VD" in that mark is set in one — the type
+   system extends their existing identity instead of inventing a new one.
+   Everything upright; no italics anywhere in the system. */
 :root{
-  /* ink / stone */
-  --ink-950:#100e0c;
-  --ink-900:#161310;
-  --ink-800:#201b16;
-  --ink-700:#332b23;
-  --ink-600:#4a3f34;
+  /* ink — near-black with a faint warm-green cast so it sits with the teal */
+  --ink-950:#121410;
+  --ink-900:#181a16;
+  --ink-800:#23251f;
+  --ink-700:#35372f;
 
-  /* brass accent — used with discipline */
-  --brass-300:#e4c78a;
-  --brass-400:#d6b876;
-  --brass-500:#c19a4d;
-  --brass-600:#a37f3a;
-  --brass-700:#8a692e;
-
-  /* paper — fact bands */
-  --paper-100:#faf7f0;
-  --paper-200:#f4eee1;
-  --paper-300:#ece2cc;
-
-  --cream:#efe7d6;
+  /* paper — the printed page */
+  --paper-100:#f7f4ec;
+  --paper-200:#f1ecdf;
+  --paper-300:#e7e0cf;
   --white:#ffffff;
+
+  /* brand teal, from the logo. --teal is for rules/marks/surfaces;
+     --teal-deep is the text-safe shade (AA on paper at small sizes). */
+  --teal:#1e9fa9;
+  --teal-deep:#116d75;
+  --teal-on-ink:#4fc0c9;
 
   /* semantic */
   --bg:var(--paper-100);
-  --bg-ink:var(--ink-900);
-  --text:var(--ink-800);
-  --text-soft:#5b5148;
-  --text-on-ink:var(--cream);
-  --text-on-ink-soft:#c7bba3;
-  --accent:var(--brass-500);
-  --accent-strong:var(--brass-600);
-  --border-hairline:rgba(16,14,12,0.14);
-  --border-hairline-on-ink:rgba(239,231,214,0.22);
+  --text:var(--ink-900);
+  --text-soft:#565349;
+  --text-on-ink:#efece1;
+  --text-on-ink-soft:#a8a598;
+  --accent:var(--teal);
+  --accent-text:var(--teal-deep);
+  --rule:rgba(18,20,16,0.18);
+  --rule-strong:rgba(18,20,16,0.72);
+  --rule-on-ink:rgba(239,236,225,0.2);
 
   /* type */
-  --font-display:'Fraunces', 'Iowan Old Style', 'Georgia', serif;
-  --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display:'Bodoni Moda','Didot','Bodoni MT','Georgia',serif;
+  --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
-  /* radius — exactly two values */
-  --radius-sm:4px;
-  --radius-md:10px;
+  --radius-sm:2px;
 
-  /* one shadow style */
-  --shadow:0 24px 60px -24px rgba(16,14,12,0.55);
-
-  /* one easing curve */
   --ease:cubic-bezier(0.19,1,0.22,1);
 
-  --container:1280px;
-  --gutter:clamp(20px, 5vw, 64px);
+  --container:1360px;
+  --gutter:clamp(18px, 4vw, 56px);
 
-  /* height of the fixed header pill — anything sticky must clear it or it
-     scrolls underneath and vanishes */
-  --header-h:102px;
+  /* height of the compact bar that pins after the masthead scrolls away —
+     anything sticky must clear it */
+  --header-h:58px;
 }
-@media(max-width:980px){
-  :root{ --header-h:98px; }
-}
-@media(max-width:520px){
-  :root{ --header-h:92px; }
+@media(max-width:640px){
+  :root{ --header-h:54px; }
 }

@@ -2,57 +2,53 @@ const site = require('../content/site');
 const { esc, u } = require('./layout');
 
 /* ------------------------------------------------------------------ *
- * A project page is a MONUMENT. The order is deliberate:
- *   arrive → orient → understand the home → see it → study it → act.
- * Every number on the page is the developer's own; nothing is invented,
- * and atmosphere imagery is always labelled as atmosphere.
+ * A project page is a FEATURE ARTICLE: title block, plate, the facts
+ * that pin, the body in columns, figures with captions. Every number
+ * is the developer's own; nothing is invented, and atmosphere imagery
+ * is always labelled as atmosphere.
  * ------------------------------------------------------------------ */
 
-function heroSection(p) {
+function waLink(p) {
   var waText = "Hello, I'm interested in " + p.name + ', ' + p.location + '.';
-  var waHref = site.whatsapp.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(waText));
+  return site.whatsapp.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(waText));
+}
+
+function artHead(p) {
   var phone = p.phone || site.phones.primary;
   var phoneHref = p.phone ? 'tel:' + p.phone.replace(/[^\d+]/g, '') : site.phones.primaryHref;
-  // Set letter by letter so the name rises as a sequence — but group the
-  // letters into non-breaking words first. Splitting on bare characters let
-  // the browser break anywhere, which put a lone "t" on its own line under
-  // "Keshavam Apartmen" at 390px.
-  var chi = 0;
-  var words = p.name.split(' ');
-  var letters = words.map(function (word, wi) {
-    var chars = word.split('').map(function (ch) {
-      return '<span class="ch" style="--i:' + (chi++) + '">' + esc(ch) + '</span>';
-    }).join('');
-    return '<span class="word">' + chars + '</span>' +
-      (wi < words.length - 1 ? '<span class="sp">&nbsp;</span>' : '');
-  }).join('');
-
   return `
-<section class="proj-hero" data-proj-hero>
-  <div class="proj-hero-media">
-    <img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
-  </div>
-  <div class="proj-hero-scrim"></div>
-  <div class="proj-hero-inner">
-    <div class="wrap">
-      <div class="proj-hero-kicker">${esc(p.location)} &middot; ${esc(p.status)}</div>
-      <h1 class="proj-hero-name" aria-label="${esc(p.name)}">${letters}</h1>
-      <p class="proj-hero-sub">${esc(p.tagline)}</p>
-      <div class="proj-hero-actions">
-        <a class="btn btn-brass" href="${waHref}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
-        <a class="btn btn-ghost" href="${phoneHref}">Call ${esc(phone)}</a>
-      </div>
+<section class="art-head">
+  <div class="wrap">
+    <div class="art-kicker">
+      <span class="k">${esc(p.location)} &middot; ${esc(p.status)}</span>
+      ${p.unitSummary ? `<span class="r">${esc(p.unitSummary)}</span>` : ''}
+    </div>
+    <h1 class="art-title"><span class="line"><span>${esc(p.name)}</span></span></h1>
+    <p class="art-standfirst">${esc(p.tagline)}</p>
+    <div class="art-actions">
+      <a class="btn btn-brass" href="${waLink(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+      <a class="btn btn-outline" href="${phoneHref}">Call ${esc(phone)}</a>
     </div>
   </div>
-  <div class="proj-hero-cue"><span>Scroll</span><i></i></div>
 </section>`;
 }
 
-/* A slim bar that pins under the header: the things a buyer re-checks
-   constantly, always in reach, plus a persistent enquire button. */
+function artPlate(p) {
+  return `
+<figure style="margin:0" data-proj-hero>
+  <div class="art-plate">
+    <img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
+  </div>
+  <figcaption class="wrap"><span class="plate-cap">
+    <span><span class="num">Fig. 01</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span>
+    <span>Developer&rsquo;s render</span>
+  </span></figcaption>
+</figure>`;
+}
+
+/* A slim ruled bar that pins under the compact header: the things a buyer
+   re-checks constantly, always in reach, plus a persistent enquire button. */
 function vitalsBar(p) {
-  var waText = "Hello, I'm interested in " + p.name + ', ' + p.location + '.';
-  var waHref = site.whatsapp.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(waText));
   return `
 <div class="vitals" data-vitals>
   <div class="wrap vitals-inner">
@@ -61,7 +57,7 @@ function vitalsBar(p) {
       ${p.unitSummary ? `<div class="vital"><span class="k">Configuration</span><span class="v">${esc(p.unitSummary)}</span></div>` : ''}
       <div class="vital"><span class="k">Status</span><span class="v">${esc(p.status)}</span></div>
     </div>
-    <a class="btn btn-brass vitals-cta" href="${waHref}" target="_blank" rel="noopener">Enquire</a>
+    <a class="btn btn-brass vitals-cta" href="${waLink(p)}" target="_blank" rel="noopener">Enquire</a>
   </div>
 </div>`;
 }
@@ -69,24 +65,24 @@ function vitalsBar(p) {
 function statementSection(p) {
   if (!p.description) return '';
   return `
-<section class="section section-paper proj-statement">
+<section class="section-tight">
   <div class="wrap">
-    <p class="proj-statement-line reveal">${esc(p.description)}</p>
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Ground</span>
+      <span class="sec-note">${esc(p.location)}</span>
+    </div>
+    <div class="art-cols reveal"><p>${esc(p.description)}</p></div>
   </div>
 </section>`;
 }
 
-/* THE UNIT EXPLORER — the published area schedule, made explorable.
-   Every unit becomes a selectable plate showing its type and area beside
-   the project's plan. This is what a buyer actually came for, so it gets
-   the weight instead of being a spreadsheet. */
+/* THE UNIT EXPLORER — the published area schedule, made explorable. */
 function unitExplorer(p) {
   if (!p.areaTables || !p.areaTables.length) return '';
 
   var blocks = p.areaTables.map(function (t, ti) {
     return {
       caption: t.caption,
-      ti: ti,
       units: t.rows.map(function (r, ri) {
         return { id: r[0], type: r[1], area: r[2], key: ti + '-' + ri };
       }),
@@ -99,10 +95,6 @@ function unitExplorer(p) {
   });
 
   var plan = (p.floorPlans && p.floorPlans[0]) ? p.floorPlans[0] : null;
-
-  // With a single block its caption is just the table's own title ("Area
-  // Statement") and repeating it above the chips and again in the readout is
-  // noise. Only name blocks when there is genuinely more than one to tell apart.
   var named = blocks.length > 1;
 
   var chips = blocks.map(function (b) {
@@ -131,12 +123,11 @@ function unitExplorer(p) {
   }).join('');
 
   return `
-<section class="section section-ink unit-explorer" data-unit-explorer>
+<section class="section section-shade unit-explorer" data-unit-explorer>
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">The Homes</div>
-      <h2 class="display-2" style="margin-top:18px">Every unit, to the square foot.</h2>
-      <p class="lede" style="margin-top:16px">${allUnits.length} configurations as published by the developer. Choose one to see its measure.</p>
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Homes</span>
+      <span class="sec-note">${allUnits.length} configurations, as published &mdash; to the square foot</span>
     </div>
     <div class="ue-grid reveal">
       <div class="ue-left">${chips}</div>
@@ -152,18 +143,17 @@ function unitExplorer(p) {
 </section>`;
 }
 
-/* When a project publishes no unit schedule, say so plainly rather than
-   leaving a hole — and give the buyer the action that gets them the answer. */
 function noScheduleNote(p) {
   if (p.areaTables && p.areaTables.length) return '';
   return `
-<section class="section section-ink">
+<section class="section-tight section-shade">
   <div class="wrap">
-    <div class="eyebrow">The Homes</div>
-    <h2 class="display-2" style="margin-top:18px">The homes here.</h2>
-    ${p.unitSummary ? `<p class="lede" style="margin-top:14px;max-width:56ch">${esc(p.unitSummary)}</p>` : ''}
-    <p class="lede" style="margin-top:16px;max-width:56ch">A unit-by-unit area schedule has not been published for ${esc(p.name)}. Ask us and we will send you the current one.</p>
-    <div style="margin-top:28px"><a class="btn btn-brass" href="${site.whatsapp.href}" target="_blank" rel="noopener">Request the area schedule</a></div>
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Homes</span>
+    </div>
+    ${p.unitSummary ? `<p class="lede reveal">${esc(p.unitSummary)}</p>` : ''}
+    <p class="lede reveal" style="margin-top:12px">A unit-by-unit area schedule has not been published for ${esc(p.name)}. Ask us and we will send you the current one.</p>
+    <div style="margin-top:22px" class="reveal"><a class="btn btn-brass" href="${site.whatsapp.href}" target="_blank" rel="noopener">Request the area schedule</a></div>
   </div>
 </section>`;
 }
@@ -171,37 +161,44 @@ function noScheduleNote(p) {
 function amenitiesSection(p) {
   if (!p.amenities || !p.amenities.length) return '';
   var items = p.amenities.map(function (a, i) {
-    return `<li class="reveal" style="transition-delay:${Math.min(i * 40, 320)}ms"><span class="am-n">${String(i + 1).padStart(2, '0')}</span><span class="am-t">${esc(a)}</span></li>`;
+    return `<li class="reveal" style="transition-delay:${Math.min(i * 30, 240)}ms"><span class="am-n">${String(i + 1).padStart(2, '0')}</span><span class="am-t">${esc(a)}</span></li>`;
   }).join('');
   var perks = (p.locationPerks || []).map(function (a, i) {
-    return `<li class="reveal" style="transition-delay:${Math.min(i * 40, 320)}ms"><span class="am-n">&mdash;</span><span class="am-t">${esc(a)}</span></li>`;
+    return `<li class="reveal" style="transition-delay:${Math.min(i * 30, 240)}ms"><span class="am-n">&mdash;</span><span class="am-t">${esc(a)}</span></li>`;
   }).join('');
   return `
-<section class="section section-paper amenities-sec">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Amenities</div>
-      <h2 class="display-2" style="margin-top:18px">Built around the day.</h2>
+    <div class="sec-row reveal">
+      <span class="eyebrow">Amenities</span>
+      <span class="sec-note">${p.amenities.length} items, as specified</span>
     </div>
     <ul class="am-list">${items}</ul>
-    ${perks ? `<div class="section-head reveal" style="margin-top:72px"><div class="eyebrow">The Address</div></div><ul class="am-list">${perks}</ul>` : ''}
+    ${perks ? `<div class="sec-row reveal" style="margin-top:44px"><span class="eyebrow">The Address</span><span class="sec-note">What the location itself provides</span></div><ul class="am-list">${perks}</ul>` : ''}
   </div>
 </section>`;
 }
 
-/* Atmosphere band — explicitly labelled. Never a photograph of the project,
-   and the band says so itself, unprompted. */
+/* Atmosphere — explicitly labelled. Never a photograph of the project,
+   and the caption line says so itself, unprompted. */
 function moodBand(p) {
   var plate = p.moodPlate || 'interior-warm';
   var line = p.moodLine || 'A home is finished long after the structure is. The rest is the part you live in.';
   return `
-<section class="mood-band" aria-label="Atmosphere">
-  <div class="mood-media parallax">
-    <img src="${u('/images/mood/' + plate + '.jpg')}" alt="Interior atmosphere — illustrative, not a photograph of ${esc(p.name)}" loading="lazy">
+<figure style="margin:0" aria-label="Atmosphere">
+  <div class="art-plate is-loaded">
+    <img src="${u('/images/mood/' + plate + '.jpg')}" alt="Interior atmosphere — illustrative, not a photograph of ${esc(p.name)}" loading="lazy" style="height:clamp(300px,52svh,560px)">
   </div>
-  <div class="mood-inner wrap">
-    <p class="mood-line reveal">${esc(line)}</p>
-    <p class="mood-disclaimer">Atmosphere only — not a photograph of ${esc(p.name)}.</p>
+  <figcaption class="wrap"><span class="plate-cap">
+    <span><span class="num">Atmosphere</span> &mdash; illustrative only, not a photograph of ${esc(p.name)}</span>
+  </span></figcaption>
+</figure>
+<section class="section-tight">
+  <div class="wrap">
+    <div class="pull-quote reveal">
+      <p>${esc(line)}</p>
+      <div class="src">Vikramshila Developers</div>
+    </div>
   </div>
 </section>`;
 }
@@ -209,11 +206,11 @@ function moodBand(p) {
 function specSection(p) {
   if (!p.specifications || !p.specifications.length) return '';
   return `
-<section class="section section-paper">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Specifications</div>
-      <h2 class="display-2" style="margin-top:18px">What it is made of.</h2>
+    <div class="sec-row reveal">
+      <span class="eyebrow">Specifications</span>
+      <span class="sec-note">What it is made of</span>
     </div>
     <div class="spec-vitrine reveal">
       ${p.specifications.map(function (s) {
@@ -228,21 +225,23 @@ function gallerySection(p) {
   var imgs = (p.gallery || []);
   if (!imgs.length) return '';
   return `
-<section class="section section-ink gallery-sec">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">The Project</div>
-      <h2 class="display-2" style="margin-top:18px">Seen from every side.</h2>
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Project</span>
+      <span class="sec-note">${imgs.length} plate${imgs.length > 1 ? 's' : ''}</span>
     </div>
-  </div>
-  <div class="gal-stack">
-    ${imgs.map(function (f, i) {
-      return `<figure class="gal-plate reveal">
-        <a href="${u('/images/optimized/' + f)}" data-lightbox data-caption="${esc(p.name)}, ${esc(p.location)}">
-          <img src="${u('/images/optimized/' + f)}" alt="${esc(p.name)}, ${esc(p.location)} — view ${i + 1}" loading="lazy">
-        </a>
-      </figure>`;
-    }).join('')}
+    <div class="gal-stack">
+      ${imgs.map(function (f, i) {
+        var fig = 'Fig. ' + String(i + 2).padStart(2, '0');
+        return `<figure class="gal-plate reveal">
+          <a href="${u('/images/optimized/' + f)}" data-lightbox data-caption="${esc(p.name)}, ${esc(p.location)}">
+            <img src="${u('/images/optimized/' + f)}" alt="${esc(p.name)}, ${esc(p.location)} — view ${i + 1}" loading="lazy">
+          </a>
+          <figcaption class="plate-cap"><span><span class="num">${fig}</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span><span>Tap to enlarge</span></figcaption>
+        </figure>`;
+      }).join('')}
+    </div>
   </div>
 </section>`;
 }
@@ -253,19 +252,19 @@ function plansSection(p) {
   var rest = (p.areaTables && p.areaTables.length) ? plans.slice(1) : plans;
   if (!rest.length) return '';
   return `
-<section class="section section-paper">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Floor Plans</div>
-      <h2 class="display-2" style="margin-top:18px">Room by room.</h2>
+    <div class="sec-row reveal">
+      <span class="eyebrow">Floor Plans</span>
+      <span class="sec-note">Room by room</span>
     </div>
     <div class="plan-grid reveal">
-      ${rest.map(function (fp) {
+      ${rest.map(function (fp, i) {
         return `<figure class="plan-item">
           <a href="${u('/images/optimized/' + fp.file)}" data-lightbox data-caption="${esc(p.name)} — ${esc(fp.caption)}">
             <img src="${u('/images/optimized/' + fp.file)}" alt="${esc(p.name)} — ${esc(fp.caption)}" loading="lazy">
           </a>
-          <figcaption>${esc(fp.caption)}</figcaption>
+          <figcaption><span style="color:var(--accent-text)">Plan ${String(i + 1).padStart(2, '0')}</span> &mdash; ${esc(fp.caption)}</figcaption>
         </figure>`;
       }).join('')}
     </div>
@@ -276,11 +275,11 @@ function plansSection(p) {
 function roomsSection(p) {
   if (!p.rooms) return '';
   return `
-<section class="section section-paper">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="eyebrow">Rooms &amp; Tariffs</div>
-      <h2 class="display-2" style="margin-top:18px">Where you stay.</h2>
+    <div class="sec-row reveal">
+      <span class="eyebrow">Rooms &amp; Tariffs</span>
+      <span class="sec-note">As published by the hotel</span>
     </div>
     <div class="table-scroll reveal">
       <table class="area-table">
@@ -290,12 +289,12 @@ function roomsSection(p) {
         }).join('')}</tbody>
       </table>
     </div>
-    <p style="margin-top:16px;font-size:13px;color:var(--text-soft)">${esc(p.roomsNote || '')}</p>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--text-soft)">${esc(p.roomsNote || '')}</p>
   </div>
 </section>
-<section class="section section-ink amenities-sec">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal"><div class="eyebrow">Facilities</div><h2 class="display-2" style="margin-top:18px">Everything on site.</h2></div>
+    <div class="sec-row reveal"><span class="eyebrow">Facilities</span><span class="sec-note">Everything on site</span></div>
     <ul class="am-list">${(p.facilities || []).map(function (f, i) {
       return `<li class="reveal"><span class="am-n">${String(i + 1).padStart(2, '0')}</span><span class="am-t">${esc(f)}</span></li>`;
     }).join('')}</ul>
@@ -306,9 +305,9 @@ function roomsSection(p) {
 function testimonialsSection(p) {
   if (!p.testimonials || !p.testimonials.length) return '';
   return `
-<section class="section section-paper">
+<section class="section-tight">
   <div class="wrap">
-    <div class="section-head reveal"><div class="eyebrow">In Their Words</div><h2 class="display-2" style="margin-top:18px">What guests say.</h2></div>
+    <div class="sec-row reveal"><span class="eyebrow">In Their Words</span><span class="sec-note">Guest reviews</span></div>
     <div class="quote-grid">
       ${p.testimonials.map(function (t) {
         return `<blockquote class="quote-card reveal">
@@ -325,23 +324,20 @@ function closeSection(p) {
   var phone = p.phone || site.phones.primary;
   var phoneHref = p.phone ? 'tel:' + p.phone.replace(/[^\d+]/g, '') : site.phones.primaryHref;
   var email = p.email || site.email;
-  var waText = "Hello, I'm interested in " + p.name + ', ' + p.location + '.';
-  var waHref = site.whatsapp.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(waText));
   var mapQ = encodeURIComponent(p.address + ', India');
 
   return `
 <section class="section proj-close">
-  <div class="proj-close-bg"><img src="${u('/images/mood/stone-marble.jpg')}" alt="" aria-hidden="true" loading="lazy"></div>
-  <div class="wrap proj-close-inner">
+  <div class="wrap">
     <div class="reveal">
-      <div class="eyebrow">Enquire</div>
-      <h2 class="display-1" style="margin-top:14px;font-size:clamp(2.3rem,5.2vw,4.2rem)">See ${esc(p.name)} in person.</h2>
-      <p class="lede" style="margin-top:20px">${esc(p.address)}</p>
+      <span class="eyebrow">Enquire</span>
+      <h2 style="margin-top:14px">See ${esc(p.name)} in person.</h2>
+      <p class="lede" style="margin-top:14px">${esc(p.address)}</p>
 
       <div class="close-actions">
-        <a class="btn btn-brass" href="${waHref}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
-        <a class="btn btn-ghost" href="${phoneHref}">Call ${esc(phone)}</a>
-        <a class="btn btn-ghost" href="https://maps.google.com/?q=${mapQ}" target="_blank" rel="noopener">Get directions</a>
+        <a class="btn btn-brass" href="${waLink(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+        <a class="btn btn-outline" href="${phoneHref}">Call ${esc(phone)}</a>
+        <a class="btn btn-outline" href="https://maps.google.com/?q=${mapQ}" target="_blank" rel="noopener">Get directions</a>
       </div>
 
       <div class="close-meta">
@@ -359,7 +355,7 @@ function closeSection(p) {
 }
 
 module.exports = function projectPage(p) {
-  var body = heroSection(p) + vitalsBar(p) + statementSection(p);
+  var body = artHead(p) + artPlate(p) + vitalsBar(p) + statementSection(p);
   if (p.kind === 'hospitality') {
     body += roomsSection(p) + gallerySection(p) + testimonialsSection(p);
   } else {

@@ -4,26 +4,26 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- hero load choreography: slow push-in + masked line rise ---------- */
-  var heroTitle = document.querySelector('.hero-title');
-  var heroSection = document.querySelector('[data-hero]');
-  if (heroTitle || heroSection) {
+  /* ---------- cover / article load choreography ---------- */
+  var loadTargets = document.querySelectorAll('[data-hero], .art-head, [data-proj-hero]');
+  if (loadTargets.length) {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        if (heroTitle) heroTitle.classList.add('is-loaded');
-        if (heroSection) heroSection.classList.add('is-loaded');
+        loadTargets.forEach(function (el) { el.classList.add('is-loaded'); });
       });
     });
   }
 
-  /* ---------- header scroll state ---------- */
-  var header = document.querySelector('.site-header');
-  if (header) {
-    var onScrollHeader = function () {
-      header.classList.toggle('is-scrolled', window.scrollY > 12);
+  /* ---------- compact bar slides in once the masthead scrolls away ---------- */
+  var compact = document.querySelector('[data-compact]');
+  var masthead = document.querySelector('header');
+  if (compact && masthead) {
+    var onScrollCompact = function () {
+      compact.classList.toggle('is-shown', window.scrollY > masthead.offsetHeight - 10);
     };
-    onScrollHeader();
-    window.addEventListener('scroll', onScrollHeader, { passive: true });
+    onScrollCompact();
+    window.addEventListener('scroll', onScrollCompact, { passive: true });
+    window.addEventListener('resize', onScrollCompact);
   }
 
   /* ---------- scroll progress hairline ---------- */
@@ -73,6 +73,7 @@
     mobileNav.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () {
         mobileNav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
       });
     });
@@ -102,53 +103,84 @@
     }
   }
 
-  /* ---------- parallax on media (disabled <=980px, see CSS) ---------- */
-  var parallaxEls = document.querySelectorAll('.parallax');
-  if (parallaxEls.length && !reduceMotion) {
-    var raf = null;
-    var updateParallax = function () {
-      raf = null;
-      var vh = window.innerHeight;
-      parallaxEls.forEach(function (el) {
-        var rect = el.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top > vh) return;
-        var center = rect.top + rect.height / 2 - vh / 2;
-        var shift = Math.max(-1, Math.min(1, center / vh)) * 34;
-        el.style.transform = 'translate3d(0,' + shift.toFixed(1) + 'px,0)';
+  /* ---------- the index preview: a plate that follows the cursor ----------
+     Desktop-only, pointer-events:none, position clamped to the viewport so
+     it can never cause horizontal overflow. Hidden entirely on touch. */
+  var indexSections = document.querySelectorAll('[data-index]');
+  var canHover = window.matchMedia('(hover: hover)').matches;
+  if (indexSections.length && canHover && !reduceMotion) {
+    var preview = document.createElement('div');
+    preview.className = 'index-preview';
+    preview.setAttribute('aria-hidden', 'true');
+    var srcs = [];
+    indexSections.forEach(function (sec) {
+      sec.querySelectorAll('.index-row[data-preview]').forEach(function (row) {
+        var src = row.getAttribute('data-preview');
+        if (srcs.indexOf(src) === -1) srcs.push(src);
       });
-    };
-    window.addEventListener('scroll', function () {
-      if (raf === null) raf = requestAnimationFrame(updateParallax);
-    }, { passive: true });
-    updateParallax();
+    });
+    if (srcs.length) {
+      var imgs = {};
+      srcs.forEach(function (src) {
+        var img = document.createElement('img');
+        img.alt = '';
+        img.setAttribute('data-src', src);
+        preview.appendChild(img);
+        imgs[src] = img;
+      });
+      document.body.appendChild(preview);
+      var loaded = false;
+      var px = 0, py = 0, raf = null;
+      var place = function () {
+        raf = null;
+        var w = preview.offsetWidth || 300;
+        var h = preview.offsetHeight || 225;
+        var x = Math.min(Math.max(px + 28, 8), window.innerWidth - w - 8);
+        var y = Math.min(Math.max(py - h / 2, 8), window.innerHeight - h - 8);
+        preview.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+        preview.style.left = '0';
+        preview.style.top = '0';
+      };
+      indexSections.forEach(function (sec) {
+        sec.querySelectorAll('.index-row[data-preview]').forEach(function (row) {
+          row.addEventListener('mouseenter', function () {
+            if (!loaded) {
+              // fetch lazily, on first hover, so the page load never pays for it
+              preview.querySelectorAll('img').forEach(function (img) { img.src = img.getAttribute('data-src'); });
+              loaded = true;
+            }
+            var src = row.getAttribute('data-preview');
+            preview.querySelectorAll('img').forEach(function (img) { img.classList.remove('is-current'); });
+            if (imgs[src]) imgs[src].classList.add('is-current');
+            preview.classList.add('is-on');
+          });
+          row.addEventListener('mouseleave', function () {
+            preview.classList.remove('is-on');
+          });
+        });
+        sec.addEventListener('mousemove', function (e) {
+          px = e.clientX; py = e.clientY;
+          if (raf === null) raf = requestAnimationFrame(place);
+        });
+      });
+    }
   }
 
-  /* ---------- self-healing marquee (repeat until >=10 tiles) ---------- */
-  document.querySelectorAll('[data-marquee]').forEach(function (track) {
-    var items = Array.prototype.slice.call(track.children);
-    if (!items.length) return;
-    while (track.children.length < 10) {
-      items.forEach(function (item) { track.appendChild(item.cloneNode(true)); });
-    }
-    // duplicate the whole set once more for a seamless -50% loop
-    var current = Array.prototype.slice.call(track.children);
-    current.forEach(function (item) { track.appendChild(item.cloneNode(true)); });
-  });
-
-  /* ---------- count-up numerals (real numbers only, driven by data-countup) ---------- */
+  /* ---------- count-up numerals (Indian digit grouping: 1,00,000) ---------- */
   var countEls = document.querySelectorAll('[data-countup]');
   if (countEls.length) {
+    var fmt = function (n) { return n.toLocaleString('en-IN'); };
     var animateCount = function (el) {
       var target = parseFloat(el.getAttribute('data-countup'));
       if (isNaN(target)) return;
       var suffix = el.getAttribute('data-suffix') || '';
-      if (reduceMotion) { el.textContent = target + suffix; return; }
+      if (reduceMotion) { el.textContent = fmt(target) + suffix; return; }
       var start = performance.now();
-      var dur = 1400;
+      var dur = 1600;
       var step = function (now) {
         var t = Math.min(1, (now - start) / dur);
         var eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(target * eased) + suffix;
+        el.textContent = fmt(Math.round(target * eased)) + suffix;
         if (t < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -163,31 +195,5 @@
     } else {
       countEls.forEach(animateCount);
     }
-  }
-
-  /* ---------- cap concurrent playing videos at 5 ---------- */
-  var videos = document.querySelectorAll('video[data-tile]');
-  if (videos.length) {
-    var playing = [];
-    var vio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var v = entry.target;
-        if (entry.isIntersecting) {
-          if (playing.indexOf(v) === -1) {
-            if (playing.length >= 5) {
-              var oldest = playing.shift();
-              oldest.pause();
-            }
-            playing.push(v);
-            v.play().catch(function () {});
-          }
-        } else {
-          v.pause();
-          var i = playing.indexOf(v);
-          if (i > -1) playing.splice(i, 1);
-        }
-      });
-    }, { threshold: 0.4 });
-    videos.forEach(function (v) { vio.observe(v); });
   }
 })();

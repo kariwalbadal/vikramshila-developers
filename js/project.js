@@ -5,18 +5,12 @@
   'use strict';
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- hero: letters rise once the image is up ---------- */
+  /* ---------- vitals bar pins once the plate is past ----------
+     (the load choreography for .art-head / [data-proj-hero] lives in site.js) */
   var heroEl = document.querySelector('[data-proj-hero]');
-  if (heroEl) {
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { heroEl.classList.add('is-loaded'); });
-    });
-  }
-
-  /* ---------- vitals bar pins once the hero is past ---------- */
   var vitals = document.querySelector('[data-vitals]');
   if (vitals && heroEl) {
-    var headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 102;
+    var headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 58;
     var onScrollVitals = function () {
       var past = heroEl.getBoundingClientRect().bottom <= headerH;
       vitals.classList.toggle('is-pinned', past);

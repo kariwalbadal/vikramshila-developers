@@ -13,7 +13,7 @@ module.exports = {
   shortName: 'Vikramshila Developers',
   philosophy: 'Creation, Not Construction',
   aboutCopy: [
-    'Founded over a decade ago and guided by a simple yet profound philosophy — ‘Creation, Not Construction’ — Vikramshila Developers Pvt. Ltd. is one of the foremost real estate companies in Bihar and Jharkhand, with over 1 lac sqft of landmark developments in Bhagalpur and Deoghar.',
+    'Founded over a decade ago and guided by a simple yet profound philosophy — ‘Creation, Not Construction’ — Vikramshila Developers Pvt. Ltd. is one of the foremost real estate companies in Bihar and Jharkhand, with over 1,00,000 sq ft of landmark developments in Bhagalpur and Deoghar.',
     'Vikramshila Developers has, to date, built projects across residential, commercial and retail segments — homes extraordinary in location, engineering, design and amenities. The company holds an uninterrupted record of completing projects on time, and carries the confidence of the families who now call those projects home.',
   ],
   namesake: 'Vikramshila was the great ancient university of Bihar — one of the two most important centres of Buddhist learning in early medieval India, founded by Emperor Dharmapala. The name is a deliberate inheritance: a promise of permanence and mastery carried from a legendary seat of learning into the buildings a family will call home.',
@@ -22,7 +22,9 @@ module.exports = {
     { value: 250, label: 'Satisfied Families', suffix: '' },
     { value: 5, label: 'Active Projects', suffix: '' },
     { value: 9, label: 'Developments Delivered & Underway', suffix: '' },
-    { value: 1, label: 'Sq Ft Developed', suffix: ' Lac+' },
+    // 1 lac, written as the full numeral so the count-up sweeps the whole
+    // figure (rendered with en-IN digit grouping: 1,00,000+)
+    { value: 100000, label: 'Sq Ft Developed', suffix: '+' },
   ],
   phones: {
     primary: '+91 8873101010',
