@@ -59,8 +59,6 @@ function showcasePicks() {
 /* THE RIVER — properties drift left to right; vertical scroll carries the
    stream, the centered card holds focus, the rest soften into depth. */
 function riverShowcase() {
-  // property plates interleaved with the company's own mark as floating
-  // objects — the reference's cadence of content cards between 3D objects
   var items = showcasePicks().map((p, i) => `
       <div class="river-card" data-river-item>
         <a class="plate" href="${u('/' + p.slug + '/')}">
@@ -72,8 +70,7 @@ function riverShowcase() {
             <span class="rc-go">View the ground <span class="arrow">&rarr;</span></span>
           </span>
         </a>
-      </div>
-      <div class="river-obj" data-river-item aria-hidden="true"><img src="${u('/images/brand/vd-mark-teal.png')}" alt=""></div>`).join('');
+      </div>`).join('');
   return `
 <section class="river ember-host" data-river>
   <div class="ember-bg" aria-hidden="true">

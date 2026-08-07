@@ -66,7 +66,7 @@
         var dx = e.clientX - dragX;
         dragX = e.clientX;
         moved += Math.abs(dx);
-        var d = dx / (window.innerWidth * 0.17);
+        var d = dx / (window.innerWidth * 0.30);
         base += d;
         dragVel = d * 60;
       });
@@ -90,22 +90,23 @@
         base += (speed * (dragging ? 0 : hold)) * dt + (dragging ? 0 : boost * dt);
         boost *= (1 - Math.min(1, dt * 2.0));
         var vw = window.innerWidth;
-        var slotPx = vw * 0.17;
+        var slotPx = vw * 0.30;
+        // one shared breath for the whole reel — perfectly symmetric
+        var breathe = Math.sin(now / 1900) * 6;
         for (var i = 0; i < N; i++) {
-          // slot-space conveyor with wraparound: o = 0 is stage centre
+          // slot-space reel with wraparound: o = 0 is stage centre
           var o = (base + i) % N;
           if (o < 0) o += N;
           if (o > N / 2) o -= N;
           var el = items[i];
-          if (Math.abs(o) > 3.4) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
+          if (Math.abs(o) > 2.2) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
           var x = o * slotPx;
-          var z = Math.min(520, o * o * 92);          // parabolic bulge: edges swing near
-          var y = Math.sin(i * 2.3) * 24 + Math.sin(now / 1600 + i) * 8;
-          var rotY = Math.max(-18, Math.min(18, -o * 6.5));
-          var blur = (z / 520) * 8.5;
-          // screen-space x after the perspective divide — used only for culling
+          var z = Math.min(240, o * o * 60);          // centre sits back; sides come gently nearer
+          var y = breathe;
+          var rotY = Math.max(-12, Math.min(12, -o * 5));
+          var blur = Math.min(2.2, o * o * 0.8);      // parallax, not cloud — sides stay readable
           var sx = x * PERSP / (PERSP - z);
-          var fade = Math.abs(sx) > vw * 0.92 ? Math.max(0, 1 - (Math.abs(sx) - vw * 0.92) / (vw * 0.25)) : 1;
+          var fade = Math.abs(sx) > vw * 0.95 ? Math.max(0, 1 - (Math.abs(sx) - vw * 0.95) / (vw * 0.22)) : 1;
           el.style.transform = 'translate(-50%, -50%) translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,' + z.toFixed(1) + 'px) rotateY(' + rotY.toFixed(2) + 'deg)';
           el.style.filter = blur > 0.4 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
           el.style.opacity = fade.toFixed(2);
