@@ -45,7 +45,6 @@ function cover() {
         </div>
       </div>
     </div>
-    <div class="chapter-index">01 &mdash; Shivalaya, Deoghar</div>
   </div>
 </section>`;
 }

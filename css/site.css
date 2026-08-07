@@ -660,8 +660,8 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .river-obj img{width:100%;height:auto;opacity:0.85;filter:drop-shadow(0 12px 24px rgba(18,20,16,0.25))}
 .river-card a.plate{display:block;position:relative;overflow:hidden;aspect-ratio:16/10;background:var(--ink-950);box-shadow:0 30px 80px -30px rgba(18,20,16,0.5)}
 .river-card img{width:100%;height:100%;object-fit:cover}
-.river-card .rc-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0) 50%,rgba(18,20,16,0.55) 100%)}
-.river-card .rc-copy{position:absolute;left:0;right:0;bottom:0;padding:0 22px 20px;color:#fff}
+.river-card .rc-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0) 36%,rgba(18,20,16,0.4) 62%,rgba(18,20,16,0.85) 100%)} /* deep enough that white type reads on white facades */
+.river-card .rc-copy{position:absolute;left:0;right:0;bottom:0;padding:0 22px 20px;color:#fff;text-shadow:0 1px 14px rgba(18,20,16,0.65)}
 .river-card .rc-meta{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.85)}
 .river-card .rc-name{font-family:var(--font-display);font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.05;color:#fff;margin-top:6px}
 .river-card .rc-go{margin-top:10px;display:inline-flex;align-items:center;gap:8px;min-height:34px;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;border-bottom:1px solid rgba(255,255,255,0.55)}
