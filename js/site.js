@@ -123,6 +123,38 @@
       requestAnimationFrame(tick);
     }
 
+    /* THE MOBILE REEL: native swipe supplies the physics; this pass adds
+       the cinema — centre card flat and slightly back, the incoming card
+       from the right nearer and tilted, easing to the exact rectangle at
+       centre, tilting away again as it exits left. */
+    if (river && riverTrack && window.innerWidth <= 900) {
+      var mCards = Array.prototype.slice.call(riverTrack.querySelectorAll('.river-card'));
+      var mRaf = null;
+      var mPass = function () {
+        mRaf = null;
+        var cx = window.innerWidth / 2;
+        mCards.forEach(function (card) {
+          var r = card.getBoundingClientRect();
+          var o = ((r.left + r.width / 2) - cx) / (r.width + window.innerWidth * 0.03);
+          var a = Math.min(1.6, Math.abs(o));
+          var scale = 1 + Math.min(0.10, a * 0.09);        // sides come nearer
+          var rotY = Math.max(-14, Math.min(14, -o * 9));  // and tilt toward you
+          card.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotY.toFixed(2) + 'deg)';
+          card.style.zIndex = String(100 + Math.round(a * 40));
+        });
+      };
+      riverTrack.addEventListener('scroll', function () {
+        if (mRaf === null) mRaf = requestAnimationFrame(mPass);
+      }, { passive: true });
+      window.addEventListener('resize', mPass);
+      mPass();
+      // open the reel with the second card centred so both neighbours peek
+      requestAnimationFrame(function () {
+        if (mCards[1]) riverTrack.scrollLeft = mCards[1].offsetLeft - (window.innerWidth - mCards[1].offsetWidth) / 2;
+        mPass();
+      });
+    }
+
     /* THE ZOOMER: scroll SCRUBS each building's dolly footage — you walk
        toward the entrance at the speed of your own scroll — then a
        blur-through hands you to the next ground. */
