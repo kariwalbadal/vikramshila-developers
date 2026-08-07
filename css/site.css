@@ -204,15 +204,15 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
    static hero is untouched when WebGL/motion are unavailable. */
 #hero3d-canvas{position:absolute;inset:0;z-index:3;width:100%;height:100%;display:block}
 .cover[data-hero3d].h3-active .cover-media{background:#131722} /* dusk stage: lights need darkness to glow */
+html.h3-pending .cover[data-hero3d] .cover-media{background:#131722} /* dark from first paint so the text is readable immediately */
 html.h3-pending .cover[data-hero3d] .cover-media img{opacity:0;transition:none}
 .cover[data-hero3d].h3-active .cover-media img{opacity:0}
 .cover[data-hero3d].h3-active .cover-scrim{opacity:0}
 /* the sharp image fades up UNDER the still-live ember mosaic — a long, seamless develop */
 .cover[data-hero3d].h3-resolved .cover-media img{opacity:1;transition:opacity 1.8s var(--ease)}
 .cover[data-hero3d].h3-resolved .cover-scrim{opacity:1;transition:opacity 2.2s var(--ease)}
-html.h3-pending .cover[data-hero3d] .cover-inner,
-.cover[data-hero3d].h3-active .cover-inner{opacity:0;transform:translateY(14px)}
-.cover[data-hero3d].h3-resolved .cover-inner{opacity:1;transform:none;transition:opacity .9s var(--ease) .25s,transform .9s var(--ease) .25s}
+/* the words stand on the dark stage from the first frame — the ember
+   flight happens BEHIND them, never before them */
 /* during the monument the photo must not push-in invisibly then jump */
 .cover[data-hero3d] .cover-media img{object-position:50% 50%}
 @media (prefers-reduced-motion:reduce){
@@ -680,7 +680,8 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .zoom-scene img,.zoom-scene .zs-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .zoom-scene .zs-video{display:none}
 @media(min-width:901px){.zoom-scene .zs-video{display:block}}
-@media(max-width:900px){.art-plate .ambient-video{display:none}}
+/* walk videos play on mobile too — 95%+ of visitors are on phones;
+   preload stays 'none' so nothing loads until the plate is on screen */
 .zoom-scene .zs-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0.15) 0%,rgba(18,20,16,0) 40%,rgba(18,20,16,0.55) 100%)}
 .zoom-scene .zs-copy{position:absolute;left:0;right:0;bottom:0;padding:0 clamp(16px,4vw,56px) clamp(28px,4.6vw,56px);color:#fff}
 .zoom-scene .zs-meta{font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.85);text-shadow:0 1px 10px rgba(18,20,16,0.6)}
