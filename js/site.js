@@ -135,10 +135,12 @@
         var cx = window.innerWidth / 2;
         mCards.forEach(function (card) {
           var r = card.getBoundingClientRect();
-          var o = ((r.left + r.width / 2) - cx) / (r.width + window.innerWidth * 0.03);
-          var a = Math.min(1.6, Math.abs(o));
-          var scale = 1 + Math.min(0.10, a * 0.09);        // sides come nearer
-          var rotY = Math.max(-14, Math.min(14, -o * 9));  // and tilt toward you
+          var o = ((r.left + r.width / 2) - cx) / (r.width + window.innerWidth * 0.05);
+          var a = Math.min(1.5, Math.abs(o));
+          // a physical reel drum: the frame at centre is on the far side of
+          // the drum — smaller — and the side frames wrap toward the viewer
+          var scale = 0.86 + Math.min(0.22, a * 0.20);
+          var rotY = Math.max(-20, Math.min(20, -o * 13));
           card.style.transform = 'scale(' + scale.toFixed(3) + ') rotateY(' + rotY.toFixed(2) + 'deg)';
           card.style.zIndex = String(100 + Math.round(a * 40));
         });
