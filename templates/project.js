@@ -47,7 +47,7 @@ function artPlate(p) {
   var walk = 'videos/walk/' + p.slug + '.mp4';
   var hasWalk = fs.existsSync(path.resolve(__dirname, '..', walk));
   return `
-<figure style="margin:0" data-proj-hero data-parallax>
+<figure style="margin:0" data-proj-hero>
   <div class="art-plate ambient">
     <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
     ${hasWalk ? `<video class="ambient-video" muted playsinline preload="none" poster="${plate(p.heroImage)}" data-ambient-src="${u('/' + walk)}" aria-hidden="true"></video>` : ''}
