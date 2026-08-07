@@ -129,7 +129,7 @@ function layout(opts) {
 ${jsonLd.map((obj) => `<script type="application/ld+json">${JSON.stringify(obj)}</script>`).join('\n')}
 ${extraHead}
 </head>
-<body class="${bodyClass}">
+<body class="${bodyClass}" data-base="${site.basePath}">
 ${header(path)}
 <main>
 ${opts.body}

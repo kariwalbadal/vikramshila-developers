@@ -32,18 +32,19 @@ module.exports = function aboutPage() {
   </div>
 </section>
 
-<section class="section-tight section-shade">
-  <div class="wrap" style="padding-block:clamp(28px,4vw,44px)">
-    <div class="sec-row reveal">
-      <span class="eyebrow">The Namesake</span>
-      <span class="sec-note">Why the name</span>
-    </div>
+<section class="band-relief">
+  <div class="bg" aria-hidden="true">
+    <img src="${u('/images/generated/relief-torchlight.jpg')}" alt="">
+    <video muted loop playsinline preload="none" poster="${u('/images/generated/relief-torchlight.jpg')}" data-ambient-src="${u('/videos/relief-torchlight.mp4')}"></video>
+  </div>
+  <div class="wrap">
     <div class="pull-quote reveal" style="border-top:0;padding-top:0">
       <p>${esc(site.namesakeShort)}</p>
+      <div class="src">The Namesake</div>
     </div>
     <div class="letter reveal">
-      <p class="muted">${esc(site.namesake)}</p>
-      <div class="letter-sign">&mdash; Vikramshila Developers Pvt. Ltd., Bhagalpur</div>
+      <p class="muted" style="color:rgba(255,255,255,0.85)">${esc(site.namesake)}</p>
+      <div class="band-note">Carved stone by torchlight &mdash; an evocation, not an artefact</div>
     </div>
   </div>
 </section>

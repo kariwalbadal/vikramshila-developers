@@ -210,6 +210,9 @@
           // but never when they sit behind the camera
           '  float birthDark = smoothstep(0.22, 0.6, lp);',
           '  float vis = mix(birthDark, 0.9 + 0.1 * sin(uTime * (1.2 + aSeed * 2.0) + aSeed * 40.0), aLight);',
+          // seated squares evaporate one by one at the very end, while the
+          // sharp image focuses underneath — nothing pops in any single frame
+          '  vis *= 1.0 - smoothstep(0.86 + aSeed * 0.10, 0.96 + aSeed * 0.04, uRaw);',
           '  vis *= step(mv.z, -0.6);',
           '  vAlpha = vis;',
           '  vShape = mix(1.0, e, aLight);',
@@ -260,6 +263,7 @@
 
       var last = performance.now();
       var raw = 0;
+      var devRaw = 0;   // rate-capped shadow of raw for the develop channel
       var titled = false;
       var faded = false;
       var stopped = false;
@@ -281,20 +285,27 @@
         camera.position.y = Math.cos(raw * Math.PI * 1.1) * 0.6 * decay;
         camera.lookAt(0, 0, 0);
 
-        // the sharp photograph develops beneath the seating pixels at the end
-        var dev = smooth(0.78, 0.985, raw);
+        // the sharp photograph develops beneath the seating pixels: it fades
+        // in BLURRED and pulls into focus, on a rate-capped clock, so the
+        // transition from mosaic to image is a continuous focus pull — never
+        // a single-frame pop, even when a gesture fast-forwards the flight
+        devRaw = Math.min(raw, devRaw + dt * 0.9);
+        var dev = smooth(0.62, 0.92, devRaw);
+        var focus = smooth(0.72, 0.995, devRaw);
         heroImg.style.opacity = dev.toFixed(3);
+        heroImg.style.filter = 'blur(' + ((1 - focus) * 16).toFixed(1) + 'px)';
         if (scrim) scrim.style.opacity = dev.toFixed(3);
 
         renderer.render(scene, camera);
 
-        if (raw >= 0.86 && !titled) {
+        if (devRaw >= 0.86 && !titled) {
           titled = true;
           cover.classList.add('h3-resolved');
         }
-        if (raw >= 1 && !faded) {
+        if (raw >= 1 && devRaw >= 0.998 && !faded) {
           faded = true;
           heroImg.style.opacity = '1';
+          heroImg.style.filter = 'none';
           if (scrim) scrim.style.opacity = '1';
           var ease = getComputedStyle(document.documentElement).getPropertyValue('--ease').trim() || 'ease';
           canvas.style.transition = 'opacity 500ms ' + ease;

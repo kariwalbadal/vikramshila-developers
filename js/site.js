@@ -200,6 +200,34 @@
     }
   }
 
+  /* ---------- EMBER VARIANT: recurring ember backdrop on connective sections ---------- */
+  if (document.body.classList.contains('v-ember')) {
+    var base = document.body.getAttribute('data-base') || '';
+    var emberTargets = [];
+    document.querySelectorAll('.chapter-paper, section[data-index]').forEach(function (s) { emberTargets.push(s); });
+    var artCols = document.querySelector('.art-cols');
+    if (artCols && artCols.closest('section')) emberTargets.push(artCols.closest('section'));
+    document.querySelectorAll('.proj-close').forEach(function (s) { emberTargets.push(s); });
+    document.querySelectorAll('.numrow, .contact-table').forEach(function (el) {
+      var sec = el.closest('section');
+      if (sec && !sec.closest('.chapter-dusk') && !el.closest('.chapter-dusk') && emberTargets.indexOf(sec) === -1 && !sec.querySelector('.enquiry-form')) emberTargets.push(sec);
+    });
+    emberTargets.forEach(function (sec) {
+      if (!sec || sec.classList.contains('ember-host')) return;
+      sec.classList.add('ember-host');
+      var bg = document.createElement('div');
+      bg.className = 'ember-bg';
+      bg.setAttribute('aria-hidden', 'true');
+      bg.innerHTML = '<img src="' + base + '/images/generated/ember-field.jpg" alt="">' +
+        '<video muted loop playsinline preload="none" poster="' + base + '/images/generated/ember-field.jpg" data-ambient-src="' + base + '/videos/ember-field.mp4"></video>';
+      sec.prepend(bg);
+    });
+    var tag = document.createElement('div');
+    tag.className = 'variant-tag';
+    tag.textContent = 'Ember variant — preview';
+    document.body.appendChild(tag);
+  }
+
   /* ---------- ambient videos: load lazily, play only while visible ---------- */
   var ambients = document.querySelectorAll('video[data-ambient-src]');
   if (ambients.length && !reduceMotion && 'IntersectionObserver' in window) {

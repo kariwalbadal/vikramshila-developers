@@ -116,12 +116,16 @@ function ledger() {
 
 function enquiry() {
   return `
-<section class="section section-shade">
-  <div class="wrap">
+<section class="chapter-dusk">
+  <div class="bg" aria-hidden="true">
+    <img src="${u('/images/generated/dusk-sky.jpg')}" alt="">
+    <video muted loop playsinline preload="none" poster="${u('/images/generated/dusk-sky.jpg')}" data-ambient-src="${u('/videos/dusk-sky.mp4')}"></video>
+  </div>
+  <div class="wrap" style="padding-block:clamp(56px,9vh,96px)">
     <h2 class="close-line reveal">See it in person.</h2>
     <div class="enquiry-grid" style="margin-top:clamp(28px,4vw,52px)">
       <div class="reveal">
-        <div class="contact-table">
+        <div class="contact-table on-dark">
           <div><span class="k">Sales</span><span class="v"><a href="${site.phones.primaryHref}">${site.phones.primary}</a></span></div>
           <div><span class="k">WhatsApp</span><span class="v"><a href="${site.whatsapp.href}" target="_blank" rel="noopener">${site.whatsapp.label}</a></span></div>
           <div><span class="k">Email</span><span class="v"><a href="mailto:${site.email}">${site.email}</a></span></div>
@@ -148,8 +152,6 @@ function enquiry() {
 }
 
 module.exports = function homePage() {
-  var body = cover() +
-    '<div class="film">' + groundChapters() + '</div>' +
-    numbersChapter() + ledger() + enquiry();
+  var body = cover() + groundChapters() + numbersChapter() + ledger() + enquiry();
   return { body: body, scripts: ['/js/hero3d.js'] };
 };

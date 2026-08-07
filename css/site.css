@@ -222,7 +222,9 @@ html.h3-pending .cover[data-hero3d] .cover-inner,
 
 /* ---------- the film: full-viewport chapters that slide over each other ---------- */
 .chapter{position:relative;height:100svh;overflow:hidden}
-.film .chapter-ground{position:sticky;top:0}
+/* EVERY plate sticks and is slid over by what follows — the hero included.
+   One homogeneous rule for the whole film. */
+.chapter-hero,.chapter-ground{position:sticky;top:0}
 .chapter-media{position:absolute;inset:0}
 .chapter-media img{width:100%;height:100%;object-fit:cover;will-change:transform;transform:scale(1.12)}
 .chapter-scrim{position:absolute;inset:0;background:
@@ -612,6 +614,34 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .cm .v a{border-bottom:1px solid var(--rule-strong);min-height:44px;display:inline-flex;align-items:center}
 .close-rera{margin-top:30px;max-width:62ch;font-size:12px;line-height:1.7;color:var(--text-soft)}
 
+/* ---- video chapters: the dusk enquiry close and the namesake band ---- */
+.chapter-dusk{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden;background:#1a2233}
+.chapter-dusk .bg{position:absolute;inset:0}
+.chapter-dusk .bg img,.chapter-dusk .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.chapter-dusk .bg video{opacity:0;transition:opacity 1.6s var(--ease)}
+.chapter-dusk .bg video.is-playing{opacity:1}
+.chapter-dusk::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,20,0.30),rgba(10,12,20,0.10) 40%,rgba(10,12,20,0.44));z-index:1}
+.chapter-dusk .wrap{position:relative;z-index:2;width:100%}
+.chapter-dusk .close-line{color:#fff;text-shadow:0 2px 24px rgba(10,12,20,0.6)}
+.contact-table.on-dark{border-top-color:rgba(255,255,255,0.7)}
+.contact-table.on-dark > div{border-bottom-color:rgba(255,255,255,0.24)}
+.contact-table.on-dark .k{color:rgba(255,255,255,0.75)}
+.contact-table.on-dark .v,.contact-table.on-dark .v a{color:#fff;border-bottom-color:rgba(255,255,255,0.5)}
+.chapter-dusk .enquiry-form{background:rgba(247,244,236,0.95);padding:clamp(20px,2.6vw,32px);border-radius:var(--radius-sm)}
+
+.band-relief{position:relative;overflow:hidden;background:#100c08;padding:clamp(72px,12vh,140px) 0}
+.band-relief .bg{position:absolute;inset:0}
+.band-relief .bg img,.band-relief .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.55}
+.band-relief .bg video{opacity:0;transition:opacity 1.6s var(--ease)}
+.band-relief .bg video.is-playing{opacity:0.55}
+.band-relief::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,12,8,0.86),rgba(16,12,8,0.35) 55%,rgba(16,12,8,0.65));z-index:1}
+.band-relief .wrap{position:relative;z-index:2}
+.band-relief .pull-quote{border-color:rgba(255,255,255,0.35)}
+.band-relief .pull-quote p{color:#fff}
+.band-relief .pull-quote .src,.band-relief .band-note{color:rgba(255,255,255,0.6)}
+.band-relief .letter p{color:rgba(255,255,255,0.85)}
+.band-relief .band-note{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-top:18px}
+
 /* ---- ambient atmosphere video (generated, labelled) ---- */
 .ambient{position:relative}
 .ambient .ambient-video{
@@ -664,6 +694,52 @@ h1,h2,h3,h4,.display-2,.display-3,.sec-title,.chrome-brand span,.chapter-name a,
 .ue-chip-id,.ue-panel-id,.ue-panel-area,.am-n,.quote-card p,.proj-close h2,
 .stub-row .n,.mobile-nav > a,.letter .dropcap::first-letter{
   font-weight:400;font-variation-settings:normal;
+}
+
+/* home: the dusk close meets the footer dark-to-dark, no ivory sliver */
+body.is-home .site-footer{margin-top:0}
+
+/* ================= EMBER VARIANT (preview builds under /variant-ember/) =====
+   The ember drift becomes a recurring backdrop on connective sections;
+   content-critical surfaces (chapters, galleries, plans, unit explorer,
+   forms) stay clean. Toggled by body.v-ember; sections tagged at runtime. */
+body.v-ember{background:#141109}
+.v-ember .ember-host{position:relative;overflow:hidden;background:#141109;color:#efece1}
+.v-ember .ember-host > *{position:relative;z-index:1}
+.v-ember .ember-bg{position:absolute;inset:0;z-index:0 !important}
+.v-ember .ember-bg img,.v-ember .ember-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5}
+.v-ember .ember-bg video{opacity:0;transition:opacity 1.4s var(--ease)}
+.v-ember .ember-bg video.is-playing{opacity:0.5}
+.v-ember .ember-bg::after{content:'';position:absolute;inset:0;background:rgba(16,13,7,0.55)}
+.v-ember .ember-host h2,.v-ember .ember-host h3,.v-ember .ember-host .close-line,.v-ember .ember-host .pull-quote p{color:#fff}
+.v-ember .ember-host .bignum .stat{color:#fff}
+.v-ember .ember-host .bignum .label,.v-ember .ember-host .numbers-note,.v-ember .ember-host .sec-note,
+.v-ember .ember-host .index-meta,.v-ember .ember-host .stub-row .d,.v-ember .ember-host .close-rera,
+.v-ember .ember-host .pull-quote .src{color:rgba(255,255,255,0.66)}
+.v-ember .ember-host .lede,.v-ember .ember-host .art-cols p{color:rgba(255,255,255,0.85)}
+.v-ember .ember-host .eyebrow,.v-ember .ember-host .index-no{color:var(--teal-on-ink)}
+.v-ember .ember-host .sec-row{border-top-color:rgba(255,255,255,0.55)}
+.v-ember .ember-host .index{border-top-color:rgba(255,255,255,0.25)}
+.v-ember .ember-host .index-row{border-bottom-color:rgba(255,255,255,0.2)}
+.v-ember .ember-host .index-name,.v-ember .ember-host .stub-row .n{color:#fff}
+.v-ember .ember-host .index-row:hover{background:rgba(255,255,255,0.06)}
+.v-ember .ember-host .index-row:hover .index-name{color:var(--teal-on-ink)}
+.v-ember .ember-host .index-arrow{color:rgba(255,255,255,0.55)}
+.v-ember .ember-host .stub-row{border-bottom-color:rgba(255,255,255,0.18)}
+.v-ember .ember-host .cm{border-bottom-color:rgba(255,255,255,0.2)}
+.v-ember .ember-host .cm .v,.v-ember .ember-host .cm .v a{color:#fff}
+.v-ember .ember-host .cm .k{color:var(--teal-on-ink)}
+.v-ember .ember-host .close-meta{border-top-color:rgba(255,255,255,0.2)}
+.v-ember .ember-host .btn-outline{border-color:rgba(255,255,255,0.6);color:#fff}
+.v-ember .ember-host .btn-outline:hover{background:#fff;color:var(--ink-950);border-color:#fff}
+.v-ember .ember-host .contact-table{border-top-color:rgba(255,255,255,0.6)}
+.v-ember .ember-host .contact-table > div{border-bottom-color:rgba(255,255,255,0.22)}
+.v-ember .ember-host .contact-table .k{color:rgba(255,255,255,0.7)}
+.v-ember .ember-host .contact-table .v,.v-ember .ember-host .contact-table .v a{color:#fff}
+.variant-tag{
+  position:fixed;left:14px;bottom:14px;z-index:300;pointer-events:none;
+  font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
+  color:#fff;background:rgba(16,13,7,0.72);padding:7px 11px;border-radius:2px;
 }
 
 @media print{

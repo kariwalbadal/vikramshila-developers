@@ -103,6 +103,23 @@ pages.forEach(function (pg) {
   write(pg.out, html);
 });
 
+// ---------- ember variant preview (three pages, canonical to the main site,
+// excluded from the sitemap) ----------
+var kesh = ALL.find(function (p) { return p.slug === 'keshavam-apartment'; });
+[
+  { path: '/', out: 'variant-ember/index.html', title: 'Vikramshila Developers — Ember Variant Preview',
+    description: 'Preview variant.', bodyClass: 'is-home v-ember', page: homePage() },
+  { path: '/about-us/', out: 'variant-ember/about-us/index.html', title: 'About — Ember Variant Preview',
+    description: 'Preview variant.', bodyClass: 'v-ember', page: aboutPage() },
+  { path: '/' + kesh.slug + '/', out: 'variant-ember/' + kesh.slug + '/index.html', title: kesh.name + ' — Ember Variant Preview',
+    description: 'Preview variant.', bodyClass: 'v-ember', page: projectPage(kesh) },
+].forEach(function (v) {
+  write(v.out, layout({
+    title: v.title, description: v.description, path: v.path,
+    body: v.page.body, scripts: v.page.scripts, bodyClass: v.bodyClass,
+  }));
+});
+
 // ---------- sitemap.xml ----------
 var urls = pages.map((pg) => `  <url><loc>${site.siteUrl}${pg.path}</loc></url>`).join('\n');
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
