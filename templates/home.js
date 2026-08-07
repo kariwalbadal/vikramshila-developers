@@ -59,8 +59,10 @@ function showcasePicks() {
 /* THE RIVER — properties drift left to right; vertical scroll carries the
    stream, the centered card holds focus, the rest soften into depth. */
 function riverShowcase() {
-  var cards = showcasePicks().map((p, i) => `
-      <div class="river-card" data-river-card>
+  // property plates interleaved with the company's own mark as floating
+  // objects — the reference's cadence of content cards between 3D objects
+  var items = showcasePicks().map((p, i) => `
+      <div class="river-card" data-river-item>
         <a class="plate" href="${u('/' + p.slug + '/')}">
           <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy">
           <span class="rc-scrim"></span>
@@ -70,16 +72,19 @@ function riverShowcase() {
             <span class="rc-go">View the ground <span class="arrow">&rarr;</span></span>
           </span>
         </a>
-      </div>`).join('');
+      </div>
+      <div class="river-obj" data-river-item aria-hidden="true"><img src="${u('/images/brand/vd-mark-teal.png')}" alt=""></div>`).join('');
   return `
-<section class="river" data-river>
-  <div class="river-pin">
-    <div class="river-head">
-      <span class="eyebrow">The Grounds</span>
-      <span class="sec-note">Six developments &middot; scroll to travel</span>
-    </div>
-    <div class="river-track" data-river-track>${cards}</div>
+<section class="river ember-host" data-river>
+  <div class="ember-bg" aria-hidden="true">
+    <img src="${u('/images/generated/ember-field.jpg')}" alt="">
+    <video muted loop playsinline preload="none" poster="${u('/images/generated/ember-field.jpg')}" data-ambient-src="${u('/videos/ember-field.mp4')}"></video>
   </div>
+  <div class="river-head">
+    <span class="eyebrow">The Grounds</span>
+    <span class="sec-note">Six developments &middot; a stream of its own &middot; drag to travel, rest to hold</span>
+  </div>
+  <div class="river-track" data-river-track>${items}</div>
 </section>`;
 }
 

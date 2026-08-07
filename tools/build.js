@@ -109,8 +109,6 @@ var kesh = ALL.find(function (p) { return p.slug === 'keshavam-apartment'; });
 [
   { path: '/', out: 'variant-1/index.html', title: 'Vikramshila Developers — Variant 1 (River)',
     description: 'Preview variant: horizontal river showcase.', bodyClass: 'is-home', page: homePage({ showcase: 'river' }) },
-  { path: '/', out: 'variant-2/index.html', title: 'Vikramshila Developers — Variant 2 (Zoom)',
-    description: 'Preview variant: zoom-through showcase.', bodyClass: 'is-home', page: homePage({ showcase: 'zoom' }) },
   { path: '/', out: 'variant-ember/index.html', title: 'Vikramshila Developers — Ember Variant Preview',
     description: 'Preview variant.', bodyClass: 'is-home v-ember', page: homePage() },
   { path: '/about-us/', out: 'variant-ember/about-us/index.html', title: 'About — Ember Variant Preview',

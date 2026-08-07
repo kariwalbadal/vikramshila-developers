@@ -39,37 +39,82 @@
       gsap.fromTo(el, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
         scrollTrigger: { trigger: el.closest('[data-chapter]'), start: 'top 55%' } });
     });
-    /* THE RIVER: vertical scroll travels the stream left-to-right; the
-       centered card holds focus while the rest soften into depth. */
+    /* THE RIVER, as the reference actually moves: a 3D ring. Items orbit
+       continuously left-to-right; at the edges they swing NEAR the camera
+       (large, blurred, fast) and through the centre they sit back (sharp,
+       calm). Scroll adds current; resting the cursor on a card holds it. */
     var river = document.querySelector('[data-river]');
     var riverTrack = document.querySelector('[data-river-track]');
     if (river && riverTrack && window.innerWidth > 900) {
-      var riverCards = Array.prototype.slice.call(riverTrack.querySelectorAll('[data-river-card]'));
-      var focusCards = function () {
-        var cx = window.innerWidth / 2;
-        riverCards.forEach(function (card) {
-          var r = card.getBoundingClientRect();
-          var d = Math.abs((r.left + r.width / 2) - cx) / window.innerWidth;
-          var f = Math.min(1, d * 1.7);
-          card.style.filter = 'blur(' + (f * 7).toFixed(1) + 'px)';
-          card.style.transform = 'scale(' + (1 - f * 0.09).toFixed(3) + ') rotateY(' + (((r.left + r.width / 2) < cx ? 1 : -1) * f * 7).toFixed(1) + 'deg)';
-          card.style.opacity = (1 - f * 0.35).toFixed(2);
-        });
-      };
-      gsap.to(riverTrack, {
-        x: function () { return -(riverTrack.scrollWidth - window.innerWidth); },
-        ease: 'none',
-        scrollTrigger: {
-          trigger: river, pin: '.river-pin', scrub: true,
-          start: 'top top',
-          end: function () { return '+=' + (riverTrack.scrollWidth - window.innerWidth); },
-          invalidateOnRefresh: true,
-          onUpdate: focusCards,
-        },
+      var items = Array.prototype.slice.call(riverTrack.querySelectorAll('[data-river-item]'));
+      var N = items.length;
+      var TAU = Math.PI * 2;
+      var base = 0;
+      var speed = 0.26;            // slots/s — one card every ~4s
+      var boost = 0;
+      var hold = 1;
+      river.addEventListener('mouseenter', function () { hold = 0.18; });
+      river.addEventListener('mouseleave', function () { hold = 1; });
+      // DECOUPLED from page scroll by design: the stream flows on its own
+      // clock, and the only outside hand on it is a direct drag
+      var dragging = false, dragX = 0, dragVel = 0, moved = 0;
+      river.addEventListener('pointerdown', function (e) {
+        dragging = true; dragX = e.clientX; dragVel = 0; moved = 0;
       });
-      focusCards();
-      // the stream is never perfectly still — a slow breath even at rest
-      gsap.to(riverTrack, { y: 8, duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      window.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        var dx = e.clientX - dragX;
+        dragX = e.clientX;
+        moved += Math.abs(dx);
+        var d = dx / (window.innerWidth * 0.17);
+        base += d;
+        dragVel = d * 60;
+      });
+      window.addEventListener('pointerup', function () {
+        if (!dragging) return;
+        dragging = false;
+        boost = Math.max(-1.4, Math.min(1.4, dragVel * 0.4));
+      });
+      // a drag must not fire the card link it started on
+      river.addEventListener('click', function (e) {
+        if (moved > 8) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
+      var lastT = performance.now();
+      var PERSP = 1150;                 // must match .river-track CSS perspective
+      var tick = function () {
+        var now = performance.now();
+        var dt = Math.min(0.05, (now - lastT) / 1000);
+        lastT = now;
+        var rr = river.getBoundingClientRect();
+        if (rr.bottom < 0 || rr.top > window.innerHeight) { requestAnimationFrame(tick); return; }
+        base += (speed * (dragging ? 0 : hold)) * dt + (dragging ? 0 : boost * dt);
+        boost *= (1 - Math.min(1, dt * 2.0));
+        var vw = window.innerWidth;
+        var slotPx = vw * 0.17;
+        for (var i = 0; i < N; i++) {
+          // slot-space conveyor with wraparound: o = 0 is stage centre
+          var o = (base + i) % N;
+          if (o < 0) o += N;
+          if (o > N / 2) o -= N;
+          var el = items[i];
+          if (Math.abs(o) > 3.4) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
+          var x = o * slotPx;
+          var z = Math.min(520, o * o * 92);          // parabolic bulge: edges swing near
+          var y = Math.sin(i * 2.3) * 24 + Math.sin(now / 1600 + i) * 8;
+          var rotY = Math.max(-18, Math.min(18, -o * 6.5));
+          var blur = (z / 520) * 8.5;
+          // screen-space x after the perspective divide — used only for culling
+          var sx = x * PERSP / (PERSP - z);
+          var fade = Math.abs(sx) > vw * 0.92 ? Math.max(0, 1 - (Math.abs(sx) - vw * 0.92) / (vw * 0.25)) : 1;
+          el.style.transform = 'translate(-50%, -50%) translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,' + z.toFixed(1) + 'px) rotateY(' + rotY.toFixed(2) + 'deg)';
+          el.style.filter = blur > 0.4 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
+          el.style.opacity = fade.toFixed(2);
+          el.style.zIndex = String(1000 + Math.round(z));
+          el.style.pointerEvents = (fade > 0.5 && z < 200) ? 'auto' : 'none';
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
     }
 
     /* THE ZOOMER: scroll flies INTO each facade — blur-through — and
@@ -275,7 +320,7 @@
   /* ---------- EMBER VARIANT: recurring ember backdrop on connective sections ---------- */
   var vEmber = document.body.classList.contains('v-ember');
   {
-    var base = document.body.getAttribute('data-base') || '';
+    var assetBase = document.body.getAttribute('data-base') || '';
     var emberTargets = [];
     if (vEmber) document.querySelectorAll('.chapter-paper, section[data-index]').forEach(function (s) { emberTargets.push(s); });
     else document.querySelectorAll('section.index-ember').forEach(function (s) { emberTargets.push(s); });
@@ -292,8 +337,8 @@
       var bg = document.createElement('div');
       bg.className = 'ember-bg';
       bg.setAttribute('aria-hidden', 'true');
-      bg.innerHTML = '<img src="' + base + '/images/generated/ember-field.jpg" alt="">' +
-        '<video muted loop playsinline preload="none" poster="' + base + '/images/generated/ember-field.jpg" data-ambient-src="' + base + '/videos/ember-field.mp4"></video>';
+      bg.innerHTML = '<img src="' + assetBase + '/images/generated/ember-field.jpg" alt="">' +
+        '<video muted loop playsinline preload="none" poster="' + assetBase + '/images/generated/ember-field.jpg" data-ambient-src="' + assetBase + '/videos/ember-field.mp4"></video>';
       sec.prepend(bg);
     });
     if (vEmber) {

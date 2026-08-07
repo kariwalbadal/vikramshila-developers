@@ -643,14 +643,20 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .band-relief .band-note{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-top:18px}
 
 /* ---------- THE RIVER: properties drift left-to-right in depth ---------- */
-.river{position:relative}
-.river-pin{height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;background:var(--bg)}
-.river-head{padding:calc(72px + 12px) var(--gutter) 18px;display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.river-track{display:flex;align-items:center;gap:clamp(24px,3vw,48px);padding:0 12vw;will-change:transform;perspective:1200px}
+.river{position:relative;background:var(--bg)}
+.river-head{padding:18px var(--gutter) 8px;display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* desktop: a 3D ring — cards orbit continuously; edges swing near the
+   camera (big, blurred, fast), the centre sits back (sharp, calm) */
+.river-track{position:relative;height:72svh;perspective:1150px;perspective-origin:50% 46%}
 .river-card{
-  position:relative;flex:0 0 auto;width:clamp(300px,56vw,760px);
-  will-change:transform,filter;
+  position:absolute;top:50%;left:50%;width:clamp(300px,30vw,470px);
+  will-change:transform,filter,opacity;backface-visibility:hidden;
 }
+.river-obj{
+  position:absolute;top:50%;left:50%;width:64px;will-change:transform,filter,opacity;
+  backface-visibility:hidden;pointer-events:none;
+}
+.river-obj img{width:100%;height:auto;opacity:0.85;filter:drop-shadow(0 12px 24px rgba(18,20,16,0.25))}
 .river-card a.plate{display:block;position:relative;overflow:hidden;aspect-ratio:16/10;background:var(--ink-950);box-shadow:0 30px 80px -30px rgba(18,20,16,0.5)}
 .river-card img{width:100%;height:100%;object-fit:cover}
 .river-card .rc-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0) 50%,rgba(18,20,16,0.55) 100%)}
@@ -659,9 +665,10 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .river-card .rc-name{font-family:var(--font-display);font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.05;color:#fff;margin-top:6px}
 .river-card .rc-go{margin-top:10px;display:inline-flex;align-items:center;gap:8px;min-height:34px;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;border-bottom:1px solid rgba(255,255,255,0.55)}
 @media(max-width:900px){
-  .river-pin{height:auto;padding-block:24px 40px}
-  .river-track{overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6vw;-webkit-overflow-scrolling:touch;perspective:none}
-  .river-card{scroll-snap-align:center;width:78vw}
+  .river{padding-block:20px 36px}
+  .river-track{display:flex;align-items:center;gap:16px;height:auto;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6vw;-webkit-overflow-scrolling:touch;perspective:none}
+  .river-card{position:static;scroll-snap-align:center;flex:0 0 auto;width:78vw;transform:none !important;filter:none !important;opacity:1 !important}
+  .river-obj{display:none}
 }
 
 /* ---------- THE ZOOMER: scroll enters each building, arrives at the next ---------- */
@@ -750,11 +757,11 @@ body.is-home .site-footer{margin-top:0}
 body.v-ember{background:#141109}
 .ember-host{position:relative;overflow:hidden;background:#141109;color:#efece1}
 .ember-host > *{position:relative;z-index:1}
-.v-ember .ember-bg{position:absolute;inset:0;z-index:0 !important}
-.v-ember .ember-bg img,.v-ember .ember-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5}
-.v-ember .ember-bg video{opacity:0;transition:opacity 1.4s var(--ease)}
-.v-ember .ember-bg video.is-playing{opacity:0.5}
-.v-ember .ember-bg::after{content:'';position:absolute;inset:0;background:rgba(16,13,7,0.55)}
+.ember-bg{position:absolute;inset:0;z-index:0 !important}
+.ember-bg img,.ember-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5}
+.ember-bg video{opacity:0;transition:opacity 1.4s var(--ease)}
+.ember-bg video.is-playing{opacity:0.5}
+.ember-bg::after{content:'';position:absolute;inset:0;background:rgba(16,13,7,0.55)}
 .ember-host h2,.ember-host h3,.ember-host .close-line,.ember-host .pull-quote p{color:#fff}
 .ember-host .bignum .stat{color:#fff}
 .ember-host .bignum .label,.ember-host .numbers-note,.ember-host .sec-note,
