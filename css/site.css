@@ -177,7 +177,7 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
 .cover[data-hero].is-loaded .cover-media img{transform:scale(1)}
 @media (prefers-reduced-motion:reduce){.cover[data-hero] .cover-media img{transform:none;transition:none}}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0) 42%,rgba(18,20,16,0.28) 68%,rgba(18,20,16,0.62) 100%)}
-.cover-inner{position:absolute;left:0;right:0;bottom:0;padding:0 var(--gutter) clamp(24px,4vw,48px)}
+.cover-inner{position:absolute;left:0;right:0;bottom:0;padding:0 var(--gutter) clamp(24px,4vw,48px);z-index:5} /* ALWAYS above the ember canvas (z-3) — the flight happens behind the words, never over them */
 .cover-inner > div{max-width:var(--container);margin-inline:auto}
 .cover-kicker{
   color:#fff;font-size:10.5px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;
@@ -246,7 +246,7 @@ html.h3-pending .cover[data-hero3d] .cover-media img{opacity:0;transition:none}
 .chapter-link .arrow{transition:transform .35s var(--ease)}
 .chapter-link:hover .arrow{transform:translateX(6px)}
 .chapter-index{
-  position:absolute;top:calc(14px + 52px);right:clamp(16px,2.6vw,36px);
+  position:absolute;top:calc(14px + 52px);right:clamp(16px,2.6vw,36px);z-index:5;
   font-size:10px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;
   color:rgba(255,255,255,0.75);text-shadow:0 1px 10px rgba(18,20,16,0.6);
 }

@@ -368,6 +368,19 @@
     }
   }
 
+  /* ---------- walk heroes: rolling half a second after the page lands ---------- */
+  var walkHero = document.querySelector('video[data-walk-hero]');
+  if (walkHero && !reduceMotion) {
+    setTimeout(function () {
+      walkHero.play().then(function () { walkHero.classList.add('is-playing'); }).catch(function () {
+        // autoplay refused (rare with muted+playsinline): retry on first touch
+        var kick = function () { walkHero.play().then(function () { walkHero.classList.add('is-playing'); }).catch(function () {}); };
+        window.addEventListener('touchstart', kick, { once: true });
+        window.addEventListener('click', kick, { once: true });
+      });
+    }, 500);
+  }
+
   /* ---------- ambient videos: load lazily, play only while visible ---------- */
   var ambients = document.querySelectorAll('video[data-ambient-src]');
   if (ambients.length && !reduceMotion && 'IntersectionObserver' in window) {

@@ -50,7 +50,7 @@ function artPlate(p) {
 <figure style="margin:0" data-proj-hero>
   <div class="art-plate ambient">
     <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
-    ${hasWalk ? `<video class="ambient-video" muted playsinline preload="none" poster="${plate(p.heroImage)}" data-ambient-src="${u('/' + walk)}" aria-hidden="true"></video>` : ''}
+    ${hasWalk ? `<video class="ambient-video" muted playsinline loop preload="auto" poster="${plate(p.heroImage)}" src="${u('/' + walk)}" data-walk-hero aria-hidden="true"></video>` : ''}
   </div>
   <figcaption class="wrap"><span class="plate-cap">
     <span><span class="num">Fig. 01</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span>
