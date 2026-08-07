@@ -50,22 +50,60 @@ function cover() {
 </section>`;
 }
 
-function groundChapters() {
+function showcasePicks() {
   var order = ['keshavam-apartment', 'sunrise', 'tejprabharesidency', 'chandeshwar-apartment', 'jagdish-enclave', 'annapurna-heights'];
   var all = RESIDENTIAL.concat(HOSPITALITY);
-  var picks = order.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
+  return order.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
+}
 
-  return picks.map((p, i) => `
-<section class="chapter chapter-ground" data-chapter>
-  <div class="chapter-media"><img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy"></div>
-  <div class="chapter-scrim"></div>
-  <div class="chapter-copy">
-    <div class="chapter-meta">${esc(p.location)} &middot; ${esc(p.status)}${p.unitSummary ? ' &middot; ' + esc(p.unitSummary) : ''}</div>
-    <h2 class="chapter-name"><a href="${u('/' + p.slug + '/')}">${esc(p.name)}</a></h2>
-    <a class="chapter-link" href="${u('/' + p.slug + '/')}">View the ground <span class="arrow">&rarr;</span></a>
+/* THE RIVER — properties drift left to right; vertical scroll carries the
+   stream, the centered card holds focus, the rest soften into depth. */
+function riverShowcase() {
+  var cards = showcasePicks().map((p, i) => `
+      <div class="river-card" data-river-card>
+        <a class="plate" href="${u('/' + p.slug + '/')}">
+          <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy">
+          <span class="rc-scrim"></span>
+          <span class="rc-copy">
+            <span class="rc-meta">${String(i + 1).padStart(2, '0')} &middot; ${esc(p.location)} &middot; ${esc(p.status)}</span>
+            <span class="rc-name">${esc(p.name)}</span>
+            <span class="rc-go">View the ground <span class="arrow">&rarr;</span></span>
+          </span>
+        </a>
+      </div>`).join('');
+  return `
+<section class="river" data-river>
+  <div class="river-pin">
+    <div class="river-head">
+      <span class="eyebrow">The Grounds</span>
+      <span class="sec-note">Six developments &middot; scroll to travel</span>
+    </div>
+    <div class="river-track" data-river-track>${cards}</div>
   </div>
-  <div class="chapter-index">${String(i + 2).padStart(2, '0')} &mdash; ${esc(p.name)}</div>
-</section>`).join('');
+</section>`;
+}
+
+/* THE ZOOMER — scroll carries you INTO each building; passing inside
+   arrives at the next ground. */
+function zoomShowcase() {
+  var picks = showcasePicks();
+  var scenes = picks.map((p, i) => `
+    <div class="zoom-scene" data-zoom-scene style="z-index:${picks.length - i}">
+      <div class="zs-media"><img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" ${i > 1 ? 'loading="lazy"' : ''}></div>
+      <div class="zs-scrim"></div>
+      <div class="zs-copy">
+        <div class="zs-meta">${String(i + 1).padStart(2, '0')} / ${picks.length} &middot; ${esc(p.location)} &middot; ${esc(p.status)}</div>
+        <h2 class="zs-name"><a href="${u('/' + p.slug + '/')}">${esc(p.name)}</a></h2>
+        <a class="zs-go" href="${u('/' + p.slug + '/')}">View the ground <span class="arrow">&rarr;</span></a>
+      </div>
+    </div>`).join('');
+  return `
+<section class="zoomer" data-zoomer>
+  <div class="zoomer-stage" data-zoomer-stage>
+    ${scenes}
+    <div class="zoom-progress" data-zoom-progress>01 / ${String(picks.length).padStart(2, '0')}</div>
+  </div>
+</section>`;
 }
 
 function numbersChapter() {
@@ -102,7 +140,7 @@ function ledger() {
       <span class="d">${esc(s.location)} &middot; ${esc(s.unitSummary)} &middot; call for details</span>
     </div>`).join('');
   return `
-<section class="section" data-index>
+<section class="section index-ember" data-index>
   <div class="wrap">
     <div class="sec-row reveal">
       <span class="eyebrow">Every Development</span>
@@ -151,7 +189,9 @@ function enquiry() {
 </section>`;
 }
 
-module.exports = function homePage() {
-  var body = cover() + groundChapters() + numbersChapter() + ledger() + enquiry();
+module.exports = function homePage(opts) {
+  opts = opts || {};
+  var showcase = opts.showcase === 'zoom' ? zoomShowcase() : riverShowcase();
+  var body = cover() + showcase + numbersChapter() + ledger() + enquiry();
   return { body: body, scripts: ['/js/hero3d.js'] };
 };

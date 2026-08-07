@@ -642,6 +642,50 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .band-relief .letter p{color:rgba(255,255,255,0.85)}
 .band-relief .band-note{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-top:18px}
 
+/* ---------- THE RIVER: properties drift left-to-right in depth ---------- */
+.river{position:relative}
+.river-pin{height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;background:var(--bg)}
+.river-head{padding:calc(72px + 12px) var(--gutter) 18px;display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.river-track{display:flex;align-items:center;gap:clamp(24px,3vw,48px);padding:0 12vw;will-change:transform;perspective:1200px}
+.river-card{
+  position:relative;flex:0 0 auto;width:clamp(300px,56vw,760px);
+  will-change:transform,filter;
+}
+.river-card a.plate{display:block;position:relative;overflow:hidden;aspect-ratio:16/10;background:var(--ink-950);box-shadow:0 30px 80px -30px rgba(18,20,16,0.5)}
+.river-card img{width:100%;height:100%;object-fit:cover}
+.river-card .rc-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0) 50%,rgba(18,20,16,0.55) 100%)}
+.river-card .rc-copy{position:absolute;left:0;right:0;bottom:0;padding:0 22px 20px;color:#fff}
+.river-card .rc-meta{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.85)}
+.river-card .rc-name{font-family:var(--font-display);font-size:clamp(1.5rem,2.6vw,2.4rem);line-height:1.05;color:#fff;margin-top:6px}
+.river-card .rc-go{margin-top:10px;display:inline-flex;align-items:center;gap:8px;min-height:34px;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;border-bottom:1px solid rgba(255,255,255,0.55)}
+@media(max-width:900px){
+  .river-pin{height:auto;padding-block:24px 40px}
+  .river-track{overflow-x:auto;scroll-snap-type:x mandatory;padding:0 6vw;-webkit-overflow-scrolling:touch;perspective:none}
+  .river-card{scroll-snap-align:center;width:78vw}
+}
+
+/* ---------- THE ZOOMER: scroll enters each building, arrives at the next ---------- */
+.zoomer{position:relative}
+.zoomer-stage{height:100svh;overflow:hidden;position:relative;background:var(--ink-950)}
+.zoom-scene{position:absolute;inset:0;will-change:transform,filter,opacity}
+.zoom-scene .zs-media{position:absolute;inset:0;transform-origin:52% 42%;will-change:transform,filter}
+.zoom-scene img{width:100%;height:100%;object-fit:cover}
+.zoom-scene .zs-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,16,0.15) 0%,rgba(18,20,16,0) 40%,rgba(18,20,16,0.55) 100%)}
+.zoom-scene .zs-copy{position:absolute;left:0;right:0;bottom:0;padding:0 clamp(16px,4vw,56px) clamp(28px,4.6vw,56px);color:#fff}
+.zoom-scene .zs-meta{font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.85);text-shadow:0 1px 10px rgba(18,20,16,0.6)}
+.zoom-scene .zs-name{font-family:var(--font-display);font-size:clamp(2.2rem,5.6vw,4.6rem);line-height:1;color:#fff;margin-top:8px;text-shadow:0 2px 26px rgba(18,20,16,0.55)}
+.zoom-scene .zs-name a{color:#fff}
+.zoom-scene .zs-go{margin-top:12px;display:inline-flex;align-items:center;gap:10px;min-height:44px;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;border-bottom:1px solid rgba(255,255,255,0.6);text-shadow:0 1px 10px rgba(18,20,16,0.6)}
+.zoom-progress{position:absolute;top:calc(14px + 52px);right:clamp(16px,2.6vw,36px);z-index:5;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:rgba(255,255,255,0.75);text-shadow:0 1px 10px rgba(18,20,16,0.6)}
+@media(max-width:900px){
+  .zoomer-stage{height:auto;position:static}
+  .zoom-scene{position:relative;height:72svh}
+}
+@media (prefers-reduced-motion:reduce){
+  .zoomer-stage{height:auto}
+  .zoom-scene{position:relative;height:80svh}
+}
+
 /* ---- ambient atmosphere video (generated, labelled) ---- */
 .ambient{position:relative}
 .ambient .ambient-video{
@@ -704,38 +748,38 @@ body.is-home .site-footer{margin-top:0}
    content-critical surfaces (chapters, galleries, plans, unit explorer,
    forms) stay clean. Toggled by body.v-ember; sections tagged at runtime. */
 body.v-ember{background:#141109}
-.v-ember .ember-host{position:relative;overflow:hidden;background:#141109;color:#efece1}
-.v-ember .ember-host > *{position:relative;z-index:1}
+.ember-host{position:relative;overflow:hidden;background:#141109;color:#efece1}
+.ember-host > *{position:relative;z-index:1}
 .v-ember .ember-bg{position:absolute;inset:0;z-index:0 !important}
 .v-ember .ember-bg img,.v-ember .ember-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5}
 .v-ember .ember-bg video{opacity:0;transition:opacity 1.4s var(--ease)}
 .v-ember .ember-bg video.is-playing{opacity:0.5}
 .v-ember .ember-bg::after{content:'';position:absolute;inset:0;background:rgba(16,13,7,0.55)}
-.v-ember .ember-host h2,.v-ember .ember-host h3,.v-ember .ember-host .close-line,.v-ember .ember-host .pull-quote p{color:#fff}
-.v-ember .ember-host .bignum .stat{color:#fff}
-.v-ember .ember-host .bignum .label,.v-ember .ember-host .numbers-note,.v-ember .ember-host .sec-note,
-.v-ember .ember-host .index-meta,.v-ember .ember-host .stub-row .d,.v-ember .ember-host .close-rera,
-.v-ember .ember-host .pull-quote .src{color:rgba(255,255,255,0.66)}
-.v-ember .ember-host .lede,.v-ember .ember-host .art-cols p{color:rgba(255,255,255,0.85)}
-.v-ember .ember-host .eyebrow,.v-ember .ember-host .index-no{color:var(--teal-on-ink)}
-.v-ember .ember-host .sec-row{border-top-color:rgba(255,255,255,0.55)}
-.v-ember .ember-host .index{border-top-color:rgba(255,255,255,0.25)}
-.v-ember .ember-host .index-row{border-bottom-color:rgba(255,255,255,0.2)}
-.v-ember .ember-host .index-name,.v-ember .ember-host .stub-row .n{color:#fff}
-.v-ember .ember-host .index-row:hover{background:rgba(255,255,255,0.06)}
-.v-ember .ember-host .index-row:hover .index-name{color:var(--teal-on-ink)}
-.v-ember .ember-host .index-arrow{color:rgba(255,255,255,0.55)}
-.v-ember .ember-host .stub-row{border-bottom-color:rgba(255,255,255,0.18)}
-.v-ember .ember-host .cm{border-bottom-color:rgba(255,255,255,0.2)}
-.v-ember .ember-host .cm .v,.v-ember .ember-host .cm .v a{color:#fff}
-.v-ember .ember-host .cm .k{color:var(--teal-on-ink)}
-.v-ember .ember-host .close-meta{border-top-color:rgba(255,255,255,0.2)}
-.v-ember .ember-host .btn-outline{border-color:rgba(255,255,255,0.6);color:#fff}
-.v-ember .ember-host .btn-outline:hover{background:#fff;color:var(--ink-950);border-color:#fff}
-.v-ember .ember-host .contact-table{border-top-color:rgba(255,255,255,0.6)}
-.v-ember .ember-host .contact-table > div{border-bottom-color:rgba(255,255,255,0.22)}
-.v-ember .ember-host .contact-table .k{color:rgba(255,255,255,0.7)}
-.v-ember .ember-host .contact-table .v,.v-ember .ember-host .contact-table .v a{color:#fff}
+.ember-host h2,.ember-host h3,.ember-host .close-line,.ember-host .pull-quote p{color:#fff}
+.ember-host .bignum .stat{color:#fff}
+.ember-host .bignum .label,.ember-host .numbers-note,.ember-host .sec-note,
+.ember-host .index-meta,.ember-host .stub-row .d,.ember-host .close-rera,
+.ember-host .pull-quote .src{color:rgba(255,255,255,0.66)}
+.ember-host .lede,.ember-host .art-cols p{color:rgba(255,255,255,0.85)}
+.ember-host .eyebrow,.ember-host .index-no{color:var(--teal-on-ink)}
+.ember-host .sec-row{border-top-color:rgba(255,255,255,0.55)}
+.ember-host .index{border-top-color:rgba(255,255,255,0.25)}
+.ember-host .index-row{border-bottom-color:rgba(255,255,255,0.2)}
+.ember-host .index-name,.ember-host .stub-row .n{color:#fff}
+.ember-host .index-row:hover{background:rgba(255,255,255,0.06)}
+.ember-host .index-row:hover .index-name{color:var(--teal-on-ink)}
+.ember-host .index-arrow{color:rgba(255,255,255,0.55)}
+.ember-host .stub-row{border-bottom-color:rgba(255,255,255,0.18)}
+.ember-host .cm{border-bottom-color:rgba(255,255,255,0.2)}
+.ember-host .cm .v,.ember-host .cm .v a{color:#fff}
+.ember-host .cm .k{color:var(--teal-on-ink)}
+.ember-host .close-meta{border-top-color:rgba(255,255,255,0.2)}
+.ember-host .btn-outline{border-color:rgba(255,255,255,0.6);color:#fff}
+.ember-host .btn-outline:hover{background:#fff;color:var(--ink-950);border-color:#fff}
+.ember-host .contact-table{border-top-color:rgba(255,255,255,0.6)}
+.ember-host .contact-table > div{border-bottom-color:rgba(255,255,255,0.22)}
+.ember-host .contact-table .k{color:rgba(255,255,255,0.7)}
+.ember-host .contact-table .v,.ember-host .contact-table .v a{color:#fff}
 .variant-tag{
   position:fixed;left:14px;bottom:14px;z-index:300;pointer-events:none;
   font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;

@@ -39,6 +39,78 @@
       gsap.fromTo(el, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
         scrollTrigger: { trigger: el.closest('[data-chapter]'), start: 'top 55%' } });
     });
+    /* THE RIVER: vertical scroll travels the stream left-to-right; the
+       centered card holds focus while the rest soften into depth. */
+    var river = document.querySelector('[data-river]');
+    var riverTrack = document.querySelector('[data-river-track]');
+    if (river && riverTrack && window.innerWidth > 900) {
+      var riverCards = Array.prototype.slice.call(riverTrack.querySelectorAll('[data-river-card]'));
+      var focusCards = function () {
+        var cx = window.innerWidth / 2;
+        riverCards.forEach(function (card) {
+          var r = card.getBoundingClientRect();
+          var d = Math.abs((r.left + r.width / 2) - cx) / window.innerWidth;
+          var f = Math.min(1, d * 1.7);
+          card.style.filter = 'blur(' + (f * 7).toFixed(1) + 'px)';
+          card.style.transform = 'scale(' + (1 - f * 0.09).toFixed(3) + ') rotateY(' + (((r.left + r.width / 2) < cx ? 1 : -1) * f * 7).toFixed(1) + 'deg)';
+          card.style.opacity = (1 - f * 0.35).toFixed(2);
+        });
+      };
+      gsap.to(riverTrack, {
+        x: function () { return -(riverTrack.scrollWidth - window.innerWidth); },
+        ease: 'none',
+        scrollTrigger: {
+          trigger: river, pin: '.river-pin', scrub: true,
+          start: 'top top',
+          end: function () { return '+=' + (riverTrack.scrollWidth - window.innerWidth); },
+          invalidateOnRefresh: true,
+          onUpdate: focusCards,
+        },
+      });
+      focusCards();
+      // the stream is never perfectly still — a slow breath even at rest
+      gsap.to(riverTrack, { y: 8, duration: 3.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+    }
+
+    /* THE ZOOMER: scroll flies INTO each facade — blur-through — and
+       arrives at the next ground, already sharpening. */
+    var zoomer = document.querySelector('[data-zoomer]');
+    if (zoomer && window.innerWidth > 900) {
+      var scenes = Array.prototype.slice.call(zoomer.querySelectorAll('[data-zoom-scene]'));
+      var prog = zoomer.querySelector('[data-zoom-progress]');
+      var SEG = 120; // vh of scroll per building
+      var ztl = gsap.timeline({
+        scrollTrigger: {
+          trigger: zoomer, pin: '[data-zoomer-stage]', scrub: true,
+          start: 'top top',
+          end: '+=' + (scenes.length * SEG) + '%',
+          onUpdate: function (self) {
+            if (!prog) return;
+            var n = Math.min(scenes.length, 1 + Math.floor(self.progress * scenes.length));
+            prog.textContent = String(n).padStart(2, '0') + ' / ' + String(scenes.length).padStart(2, '0');
+          },
+        },
+      });
+      scenes.forEach(function (scene, i) {
+        var media = scene.querySelector('.zs-media');
+        var copy = scene.querySelector('.zs-copy');
+        var t0 = i;             // each scene owns one unit of the timeline
+        if (i > 0) {
+          // arrive: sharpen out of the blur-through
+          ztl.fromTo(media, { scale: 1.18, filter: 'blur(10px)' },
+            { scale: 1, filter: 'blur(0px)', duration: 0.3, ease: 'power2.out' }, t0);
+          ztl.fromTo(copy, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.22, ease: 'power2.out' }, t0 + 0.08);
+        }
+        if (i < scenes.length - 1) {
+          // depart: fly INTO the building — scale toward the entry point,
+          // blur through, and hand off to the scene beneath
+          ztl.to(media, { scale: 5.2, filter: 'blur(14px)', duration: 0.42, ease: 'power2.in' }, t0 + 0.58);
+          ztl.to(copy, { autoAlpha: 0, y: -24, duration: 0.18, ease: 'power1.in' }, t0 + 0.58);
+          ztl.to(scene, { autoAlpha: 0, duration: 0.14, ease: 'none' }, t0 + 0.86);
+        }
+      });
+    }
+
     // gentle drift on any flagged plate (project pages)
     document.querySelectorAll('[data-parallax] img').forEach(function (img) {
       gsap.fromTo(img,
@@ -201,14 +273,16 @@
   }
 
   /* ---------- EMBER VARIANT: recurring ember backdrop on connective sections ---------- */
-  if (document.body.classList.contains('v-ember')) {
+  var vEmber = document.body.classList.contains('v-ember');
+  {
     var base = document.body.getAttribute('data-base') || '';
     var emberTargets = [];
-    document.querySelectorAll('.chapter-paper, section[data-index]').forEach(function (s) { emberTargets.push(s); });
-    var artCols = document.querySelector('.art-cols');
+    if (vEmber) document.querySelectorAll('.chapter-paper, section[data-index]').forEach(function (s) { emberTargets.push(s); });
+    else document.querySelectorAll('section.index-ember').forEach(function (s) { emberTargets.push(s); });
+    var artCols = vEmber ? document.querySelector('.art-cols') : null;
     if (artCols && artCols.closest('section')) emberTargets.push(artCols.closest('section'));
-    document.querySelectorAll('.proj-close').forEach(function (s) { emberTargets.push(s); });
-    document.querySelectorAll('.numrow, .contact-table').forEach(function (el) {
+    if (vEmber) document.querySelectorAll('.proj-close').forEach(function (s) { emberTargets.push(s); });
+    if (vEmber) document.querySelectorAll('.numrow, .contact-table').forEach(function (el) {
       var sec = el.closest('section');
       if (sec && !sec.closest('.chapter-dusk') && !el.closest('.chapter-dusk') && emberTargets.indexOf(sec) === -1 && !sec.querySelector('.enquiry-form')) emberTargets.push(sec);
     });
@@ -222,10 +296,12 @@
         '<video muted loop playsinline preload="none" poster="' + base + '/images/generated/ember-field.jpg" data-ambient-src="' + base + '/videos/ember-field.mp4"></video>';
       sec.prepend(bg);
     });
-    var tag = document.createElement('div');
-    tag.className = 'variant-tag';
-    tag.textContent = 'Ember variant — preview';
-    document.body.appendChild(tag);
+    if (vEmber) {
+      var tag = document.createElement('div');
+      tag.className = 'variant-tag';
+      tag.textContent = 'Ember variant — preview';
+      document.body.appendChild(tag);
+    }
   }
 
   /* ---------- ambient videos: load lazily, play only while visible ---------- */
