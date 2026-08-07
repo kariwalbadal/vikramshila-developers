@@ -100,12 +100,17 @@
           if (o > N / 2) o -= N;
           var el = items[i];
           if (Math.abs(o) > 2.2) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; continue; }
-          var x = o * slotPx;
-          var z = Math.min(240, o * o * 60);          // centre sits back; sides come gently nearer
+          // deeper arc: the centre card rests well BEHIND the screen plane,
+          // the sides sweep forward — more depth in the curve
+          var z = -150 + Math.min(430, o * o * 95);
+          // spacing correction: perspective would swell the gaps between
+          // depths — de-amplify by half so gaps vary gently, not wildly
+          var amp = PERSP / (PERSP - z);
+          var x = o * slotPx * (1 + (amp - 1) * 0.5) / amp;
           var y = breathe;
-          var rotY = Math.max(-12, Math.min(12, -o * 5));
+          var rotY = Math.max(-14, Math.min(14, -o * 6));
           var blur = Math.min(2.2, o * o * 0.8);      // parallax, not cloud — sides stay readable
-          var sx = x * PERSP / (PERSP - z);
+          var sx = x * amp;
           var fade = Math.abs(sx) > vw * 0.95 ? Math.max(0, 1 - (Math.abs(sx) - vw * 0.95) / (vw * 0.22)) : 1;
           el.style.transform = 'translate(-50%, -50%) translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,' + z.toFixed(1) + 'px) rotateY(' + rotY.toFixed(2) + 'deg)';
           el.style.filter = blur > 0.4 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
@@ -390,7 +395,7 @@
       var suffix = el.getAttribute('data-suffix') || '';
       if (reduceMotion) { el.textContent = fmt(target) + suffix; return; }
       var start = performance.now();
-      var dur = 1600;
+      var dur = 1000; // hard cap: a scroller must never miss the count
       var step = function (now) {
         var t = Math.min(1, (now - start) / dur);
         var eased = 1 - Math.pow(1 - t, 3);
