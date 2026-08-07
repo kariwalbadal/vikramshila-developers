@@ -111,7 +111,8 @@ function layout(opts) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
-<link rel="icon" href="${u('/favicon.svg')}" type="image/svg+xml">
+<link rel="icon" href="${u('/favicon.png')}" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="${u('/apple-touch-icon.png')}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${esc(site.shortName)}">
 <meta property="og:title" content="${esc(title)}">

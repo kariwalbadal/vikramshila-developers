@@ -256,7 +256,7 @@ html.h3-pending .cover[data-hero3d] .cover-media img{opacity:0;transition:none}
 .chapter-paper{height:auto;min-height:72svh;display:flex;align-items:center;background:var(--bg)}
 .numbers-stage{padding-block:clamp(56px,10vh,120px)}
 .numbers-line{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(28px,5vw,64px)}
-@media(min-width:860px){.numbers-line{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:860px){.numbers-line{grid-template-columns:repeat(3,1fr)}}
 .bignum .stat{
   font-family:var(--font-display);font-size:clamp(2.6rem,6vw,5rem);line-height:1;display:block;color:var(--text);
 }
@@ -328,6 +328,25 @@ html.h3-pending .cover[data-hero3d] .cover-media img{opacity:0;transition:none}
 }
 .stub-row .n{font-family:var(--font-display);font-weight:500;font-size:1.05rem;color:var(--text)}
 .stub-row .d{font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600}
+
+/* named-but-undocumented developments as full index rows: same rule, no link */
+.index-static{cursor:default}
+.index-static:hover{background:transparent}
+.index-static .index-name{color:var(--text)}
+@media(max-width:879px){
+  .index-static{grid-template-columns:1fr;grid-template-areas:'no' 'name' 'meta1' 'meta2' 'meta3'}
+}
+.index-footnote{
+  margin-top:18px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-soft);font-weight:600;
+}
+.index-footnote a{color:var(--accent-text)}
+.ember-host .index-footnote{color:rgba(255,255,255,0.62)}
+.ember-host .index-footnote a{color:#fff}
+
+/* the developer's published film — 16:9, ruled like a plate */
+.video-embed{position:relative;aspect-ratio:16/9;background:var(--ink-950)}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
 /* ---------- cover story ---------- */
 .story{display:grid;grid-template-columns:1fr;gap:32px}

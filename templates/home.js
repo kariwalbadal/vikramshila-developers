@@ -50,7 +50,8 @@ function cover() {
 }
 
 function showcasePicks() {
-  var order = ['keshavam-apartment', 'sunrise', 'tejprabharesidency', 'chandeshwar-apartment', 'jagdish-enclave', 'annapurna-heights'];
+  // every development with its own page rides the reel — none left out
+  var order = ['keshavam-apartment', 'sunrise', 'tejprabharesidency', 'shivalaya', 'chandeshwar-apartment', 'jagdish-enclave', 'ganesh-enclave', 'annapurna-heights', 'chinmaye-in'];
   var all = RESIDENTIAL.concat(HOSPITALITY);
   return order.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
 }
@@ -78,7 +79,7 @@ function riverShowcase() {
   </div>
   <div class="river-head">
     <span class="eyebrow">The Grounds</span>
-    <span class="sec-note">Six developments &middot; a stream of its own &middot; drag to travel, rest to hold</span>
+    <span class="sec-note">Nine grounds on the reel &middot; a stream of its own &middot; drag to travel, rest to hold</span>
   </div>
   <div class="river-track" data-river-track>${items}</div>
 </section>`;
@@ -144,20 +145,26 @@ function ledger() {
       <span class="index-arrow" aria-hidden="true">&rarr;</span>
       <img class="index-thumb" src="${u('/images/optimized/' + p.heroImage)}" alt="" aria-hidden="true" loading="lazy">
     </a>`).join('');
-  var stubs = STUBS.map((s) => `
-    <div class="stub-row">
-      <span class="n">${esc(s.name)}</span>
-      <span class="d">${esc(s.location)} &middot; ${esc(s.unitSummary)} &middot; call for details</span>
+  // developments named by the developer without a documented page yet —
+  // same ruled rows, same numbering, no link to pretend otherwise
+  var statics = STUBS.map((s, i) => `
+    <div class="index-row index-static">
+      <span class="index-no">${String(all.length + i + 1).padStart(2, '0')}</span>
+      <span class="index-name">${esc(s.name)}</span>
+      <span class="index-meta m1">${esc(s.location || '—')}</span>
+      <span class="index-meta m2">${esc(s.unitSummary || '')}</span>
+      <span class="index-meta m3">${esc(s.status || 'Details on request')}</span>
+      <span class="index-arrow" aria-hidden="true"></span>
     </div>`).join('');
   return `
 <section class="section index-ember" data-index>
   <div class="wrap">
     <div class="sec-row reveal">
       <span class="eyebrow">Every Development</span>
-      <span class="sec-note">Nine grounds &middot; one standard</span>
+      <span class="sec-note">Twelve grounds &middot; one standard</span>
     </div>
-    <div class="index reveal">${rows}</div>
-    ${stubs}
+    <div class="index reveal">${rows}${statics}</div>
+    <p class="index-footnote reveal">Devpreet Vikramshila, Shyamri Tower and Astha Garden await full documentation — call <a href="${site.phones.primaryHref}">${site.phones.primary}</a> for details.</p>
   </div>
 </section>`;
 }

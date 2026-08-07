@@ -38,6 +38,7 @@ function artHead(p) {
     <div class="art-actions">
       <a class="btn btn-brass" href="${waLink(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
       <a class="btn btn-outline" href="${phoneHref}">Call ${esc(phone)}</a>
+      ${p.brochure ? `<a class="btn btn-outline" href="${u(p.brochure)}" target="_blank" rel="noopener">Brochure (PDF)</a>` : ''}
     </div>
   </div>
 </section>`;
@@ -253,6 +254,23 @@ function gallerySection(p) {
 </section>`;
 }
 
+/* The developer's own published film — the only video embed in the harvest. */
+function videoSection(p) {
+  if (!p.video) return '';
+  return `
+<section class="section-tight">
+  <div class="wrap">
+    <div class="sec-row reveal">
+      <span class="eyebrow">The Film</span>
+      <span class="sec-note">As published by the developer</span>
+    </div>
+    <div class="video-embed reveal">
+      <iframe src="https://www.youtube-nocookie.com/embed/${esc(p.video)}" title="${esc(p.name)}, ${esc(p.location)} — video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+</section>`;
+}
+
 function plansSection(p) {
   var plans = p.floorPlans || [];
   // the first plan already appears inside the unit explorer
@@ -345,6 +363,7 @@ function closeSection(p) {
         <a class="btn btn-brass" href="${waLink(p)}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
         <a class="btn btn-outline" href="${phoneHref}">Call ${esc(phone)}</a>
         <a class="btn btn-outline" href="https://maps.google.com/?q=${mapQ}" target="_blank" rel="noopener">Get directions</a>
+        ${p.brochure ? `<a class="btn btn-outline" href="${u(p.brochure)}" target="_blank" rel="noopener">Brochure (PDF)</a>` : ''}
       </div>
 
       <div class="close-meta">
@@ -366,7 +385,7 @@ module.exports = function projectPage(p) {
   if (p.kind === 'hospitality') {
     body += roomsSection(p) + gallerySection(p) + testimonialsSection(p);
   } else {
-    body += unitExplorer(p) + noScheduleNote(p) + gallerySection(p) + moodBand(p) +
+    body += unitExplorer(p) + noScheduleNote(p) + gallerySection(p) + videoSection(p) + moodBand(p) +
             amenitiesSection(p) + specSection(p) + plansSection(p);
   }
   body += closeSection(p);

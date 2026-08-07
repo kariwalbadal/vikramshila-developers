@@ -18,10 +18,10 @@ module.exports = {
   ],
   namesake: 'Vikramshila was the great ancient university of Bihar — one of the two most important centres of Buddhist learning in early medieval India, founded by Emperor Dharmapala. The name is a deliberate inheritance: a promise of permanence and mastery carried from a legendary seat of learning into the buildings a family will call home.',
   namesakeShort: 'A university that outlasted empires. We chose the name to promise the same of what we build.',
+  // Exactly the three figures the developer publishes — no derived counts.
   stats: [
     { value: 250, label: 'Satisfied Families', suffix: '' },
     { value: 5, label: 'Active Projects', suffix: '' },
-    { value: 9, label: 'Developments Delivered & Underway', suffix: '' },
     // 1 lac, written as the full numeral so the count-up sweeps the whole
     // figure (rendered with en-IN digit grouping: 1,00,000+)
     { value: 100000, label: 'Sq Ft Developed', suffix: '+' },

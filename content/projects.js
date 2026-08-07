@@ -38,7 +38,7 @@ const RESIDENTIAL = [
     // the project's clip-art logo — dropped. 3-02.png is the genuine plan
     // (units A–F, sqft matching the area table above).
     floorPlans: [{ file: '3-02.png', caption: 'Typical Floor Plan' }],
-    brochure: null,
+    brochure: '/brochures/sunrise.pdf',
     notes: [],
   },
   {
@@ -84,11 +84,12 @@ const RESIDENTIAL = [
       { group: 'Bathroom', text: 'Hot/cold mixer with overhead shower, branded CP fittings, concealed plumbing, anti-skid ceramic tiles.' },
       { group: 'Flooring', text: 'Vitrified tiles.' },
       { group: 'Doors & windows', text: 'Designer main door; powder-coated aluminium windows; designer balcony railing.' },
+      { group: 'Utility', text: 'Washing-machine provision in the utility area; exhaust-fan provision in kitchen and toilets.' },
     ],
     heroImage: '0000_23_Chandeshwar_Apartment-05-01-2_11zon.jpg',
     gallery: ['Pi7_Image_chandeshwarapartmentnightview_page-00011.jpg'], // hero not repeated
     floorPlans: [{ file: 'New-Project-1.jpg', caption: 'Floor Plan & Views' }],
-    brochure: null,
+    brochure: '/brochures/chandeshwar-apartment.pdf',
     notes: ['No marketing description paragraph or unit-area table was published for this project.'],
   },
   {
@@ -101,7 +102,7 @@ const RESIDENTIAL = [
     tagline: '2BHK / 3BHK luxury flats in Deoghar, Jharkhand',
     location: 'Deoghar, Jharkhand',
     address: 'Keshavam Apartment, In front of Khadi Gram Board Office, Jhousagarhi, Deoghar, Jharkhand – 814112',
-    description: 'Two blocks of considered 2BHK and 3BHK homes, from the second to the ninth floor, with a full amenity set built around family life — play area, community hall, gymnasium and round-the-clock generator backup.',
+    description: 'Two blocks of considered 2BHK and 3BHK homes, from the second to the ninth floor, with a full amenity set built around family life — play area, community hall, gymnasium and generator backup.',
     unitSummary: '2BHK / 3BHK across Block A & Block B, 2nd–9th floor',
     areaTables: [
       { caption: 'Block A — 2nd to 9th Floor', rows: [
@@ -130,7 +131,7 @@ const RESIDENTIAL = [
     heroImage: '1.png',
     gallery: ['12.png', '15.png'], // hero (1.png) not repeated
     floorPlans: [{ file: '28.png', caption: 'Floor Plan — Block A' }, { file: '29.png', caption: 'Floor Plan — Block B' }],
-    brochure: null,
+    brochure: '/brochures/keshavam-apartment.pdf',
     notes: [],
   },
   {
@@ -154,7 +155,7 @@ const RESIDENTIAL = [
     heroImage: 'ganeshlogo.jpg',
     gallery: [],
     floorPlans: [{ file: 'ga1-680x700-1.jpg', caption: 'Site Plan' }, { file: 'gf1-700x676-1.jpg', caption: 'Floor Plan' }],
-    brochure: null,
+    brochure: '/brochures/ganesh-enclave.pdf',
     notes: ['The old site’s gallery repeated a single logo image; no distinct set of elevation photographs exists in the harvest for this project.'],
   },
   {
@@ -186,7 +187,7 @@ const RESIDENTIAL = [
       { file: 'Flat-C.jpg', caption: 'Flat C' }, { file: 'Flat-D.jpg', caption: 'Flat D' },
       { file: 'FloorPlan_Shivalaya.jpg', caption: 'Typical Floor Plan' },
     ],
-    brochure: null,
+    brochure: '/brochures/shivalaya.pdf',
     notes: ['The old site listed two conflicting addresses for this project (a Bhagalpur one duplicated from Jagdish Enclave, and a Deoghar one matching the body copy). The Deoghar address is shown here as the more plausible of the two — needs client confirmation.'],
   },
   {
@@ -220,7 +221,7 @@ const RESIDENTIAL = [
     heroImage: 'annapurna-hero-clean.jpg',
     gallery: ['Pi7_Image_AnnapurnaHeights_page-0002.jpg', 'Pi7_Image_AnnapurnaHeights_page-0008.jpg', 'Pi7_Image_AnnapurnaHeights_page-00061.jpg'],
     floorPlans: [{ file: 'Block-1-1.jpg', caption: 'Floor Plan — Block 1' }, { file: 'Block-2-2.jpg', caption: 'Floor Plan — Block 2' }],
-    brochure: null,
+    brochure: '/brochures/annapurna-heights.pdf',
     notes: ['This is the only project in the harvest located outside Bihar/Jharkhand — worth confirming with the client that it is current.'],
   },
   {
@@ -229,7 +230,7 @@ const RESIDENTIAL = [
     moodLine: 'Ground and five floors near Chanakya Vihar, with servant quarters, a top-floor gym and cross-ventilation throughout.',
     name: 'Jagdish Enclave',
     kind: 'residential',
-    status: 'Ongoing',
+    status: 'Completed',
     tagline: '2BHK / 3BHK flats in Bhagalpur',
     location: 'Near Chanakya Vihar Colony, Bhagalpur',
     address: 'Chanakya Vihar Colony, Bhagalpur – 812002',
@@ -242,14 +243,26 @@ const RESIDENTIAL = [
         ['E', '3BHK', '1,280 sqft'], ['F', '3BHK', '1,376 sqft'], ['G', '3BHK', '1,280 sqft'], ['H', '3BHK', '1,498 sqft'],
       ] },
     ],
-    amenities: ['Elegant designer entrance gate with security cabin', 'Community hall with kitchen (ground floor)', 'State-of-the-art gymnasium (top floor)', 'Children’s play area', 'Generator backup for apartments, lifts and common areas', 'Earthquake-resistant structure', 'Internal paved road', 'Intercom facility', 'Rain water harvesting', 'Fire-fighting system', 'Separate servant quarters', '24-hour CCTV surveillance', 'Cross-ventilated flats'],
+    amenities: ['Elegant designer entrance gate with security cabin', 'Community hall with kitchen (ground floor)', 'State-of-the-art gymnasium (top floor)', 'Children’s play area', 'Generator backup for apartments, lifts and common areas', 'Earthquake-resistant structure', 'Internal paved road', 'Intercom facility', 'Rain water harvesting', 'Fire-fighting system', 'Manual elevators', 'Internal walls finished with smooth gypsum plaster', 'Tiles flooring in common areas', 'Ample car & two-wheeler parking', 'Separate servant quarters', '24-hour CCTV surveillance', 'Cross-ventilated flats'],
     specifications: [],
     heroImage: 'Jagdish-enclave-1-img_page-0001.jpg',
     gallery: [], // the only render is already the hero — don't repeat it below
 
-    floorPlans: [{ file: 'Untitled-1-17_19_11zon.jpg', caption: 'Ground Floor Plan' }, { file: 'Untitled-1-18_18_11zon.jpg', caption: '1st to 5th Floor Plan' }],
-    brochure: null,
-    notes: ['The old site’s navigation listed this project as "Completed," but its own body copy described flats as still "coming up" for possession — shown here as Ongoing on that basis, matching the site’s own "5 Active Projects" count, but needs client confirmation of true status.', 'Two of the harvested hero images for this project were filenamed as stock photography rather than site photography — the aerial/day image used here is the one that reads as a genuine project render.'],
+    floorPlans: [
+      { file: 'Untitled-1-17_19_11zon.jpg', caption: 'Ground Floor Plan' },
+      { file: 'Untitled-1-18_18_11zon.jpg', caption: '1st to 5th Floor Plan' },
+      { file: 'Untitled-1-17-1_16_11zon.jpg', caption: 'Unit A — 3BHK, 1,772 sqft' },
+      { file: 'Untitled-1-18.jpg', caption: 'Unit B — 2BHK, 1,240 sqft' },
+      { file: 'Untitled-1-17-1.jpg', caption: 'Unit C — 2BHK, 1,210 sqft' },
+      { file: 'Untitled-1-18-1.jpg', caption: 'Unit D — 3BHK, 1,524 sqft' },
+      { file: 'Untitled-1-18-3.jpg', caption: 'Unit E — 3BHK, 1,280 sqft' },
+      { file: 'Untitled-1-17-2.jpg', caption: 'Unit F — 3BHK, 1,376 sqft' },
+      { file: 'Untitled-1-18-3-1.jpg', caption: 'Unit G — 3BHK, 1,280 sqft' },
+      // the source states two conflicting areas for Unit H (1,280 vs 1,498 sqft) — caption omits the figure
+      { file: 'UNIT-H.jpg', caption: 'Unit H — 3BHK' },
+    ],
+    brochure: '/brochures/jagdish-enclave.pdf',
+    notes: ['Shown as "Completed" matching the old site’s navigation; that site’s own body copy described flats as still "coming up" for possession — true status still needs client confirmation.', 'Two of the harvested hero images for this project were filenamed as stock photography rather than site photography — the aerial/day image used here is the one that reads as a genuine project render.'],
   },
 ];
 
@@ -272,6 +285,7 @@ const HOSPITALITY = [
     facilities: ['Multi-cuisine restaurant, from world cuisine to authentic Italian and Indian fare', 'Wedding coordination', 'Music & dancing — DJ, live band, solo artist, anchor', '2-wheeler and 4-wheeler parking'],
     testimonials: [
       { name: 'Ayush Khetriwal', role: 'Businessman', quote: 'Hand down, this is the best place to stay in Bhagalpur. It’s an icon on its own. The best part is the hospitality and food — the owners show a keen interest in your comfort.' },
+      { name: 'Ayush Khetriwal', role: 'Businessman', quote: 'Easy to find location on the main road, beautiful new building, smooth and fast check-in… big well-lighted room, comfortable bed… fast room service, polite staff, 24 hours hot water… This is perhaps the best hotel of the city.' },
       { name: 'Kamlesh Rawani', role: 'Businessman', quote: 'It was a nice experience staying at Chinmaye Inn. This hotel has all the amenities. Service is very good and staff are very cooperative — the most important part is the ambience, and a beautiful rooftop restaurant.' },
     ],
     phone: '+91 88772 22233',
@@ -285,10 +299,13 @@ const HOSPITALITY = [
   },
 ];
 
+// Named on the old site with no detail page, photography or unit data —
+// promoted to full index rows (unlinked) so no development goes unlisted.
+// Astha Garden's status is genuinely unstated in the source; left blank.
 const STUBS = [
   { name: 'Devpreet Vikramshila', location: 'Jharkhand', status: 'Completed', unitSummary: '2BHK / 3BHK' },
   { name: 'Shyamri Tower', location: '', status: 'Completed', unitSummary: '2BHK / 3BHK' },
-  { name: 'Astha Garden', location: 'Jharkhand', status: 'Completed', unitSummary: '2BHK / 3BHK' },
+  { name: 'Astha Garden', location: 'Jharkhand', status: '', unitSummary: '2BHK / 3BHK' },
 ];
 
 module.exports = { RESIDENTIAL, HOSPITALITY, STUBS, ALL: RESIDENTIAL.concat(HOSPITALITY) };
