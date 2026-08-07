@@ -191,22 +191,12 @@ function amenitiesSection(p) {
 
 /* Atmosphere — explicitly labelled. Never a photograph of the project,
    and the caption line says so itself, unprompted. */
+/* The moodLine stays as a purely typographic moment. The generated
+   "atmosphere" plates are gone — a generated image is not the atmosphere of
+   a real project, and pretending otherwise reads exactly as fake. */
 function moodBand(p) {
-  // three generated atmospheres rotate across projects so no two adjacent
-  // pages share a band; all are labelled as illustrative
-  var moods = ['dusk-sky', 'relief-torchlight', 'ember-field'];
-  var moodFile = moods[p.slug.length % moods.length];
   var line = p.moodLine || 'A home is finished long after the structure is. The rest is the part you live in.';
   return `
-<figure style="margin:0" aria-label="Atmosphere">
-  <div class="art-plate is-loaded ambient">
-    <img src="${u('/images/generated/' + moodFile + '.jpg')}" alt="Atmosphere — illustrative, not a photograph of ${esc(p.name)}" loading="lazy" style="height:clamp(300px,52svh,560px)">
-    <video class="ambient-video" muted loop playsinline preload="none" poster="${u('/images/generated/' + moodFile + '.jpg')}" data-ambient-src="${u('/videos/' + moodFile + '.mp4')}" aria-hidden="true"></video>
-  </div>
-  <figcaption class="wrap"><span class="plate-cap">
-    <span><span class="num">Atmosphere</span> &mdash; illustrative only, not a photograph of ${esc(p.name)}</span>
-  </span></figcaption>
-</figure>
 <section class="section-tight">
   <div class="wrap">
     <div class="pull-quote reveal">

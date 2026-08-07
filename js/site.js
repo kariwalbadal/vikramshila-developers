@@ -19,7 +19,7 @@
   /* ---------- inertia scroll (the feel of the whole site) ---------- */
   var lenis = null;
   if (!reduceMotion && window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.1, wheelMultiplier: 1.0 });
+    lenis = new window.Lenis({ lerp: 0.18, wheelMultiplier: 1.0 });
     var lraf = function (time) { lenis.raf(time); requestAnimationFrame(lraf); };
     requestAnimationFrame(lraf);
   }
@@ -132,7 +132,7 @@
             }
           });
         },
-        { threshold: 0.16, rootMargin: '0px 0px -8% 0px' }
+        { threshold: 0.16, rootMargin: '600% 0px -8% 0px' } // top margin: an element scrolled PAST must count as seen — fast scrolling teleports over short elements between IO frames
       );
       revealables.forEach(function (el) { io.observe(el); });
     } else {

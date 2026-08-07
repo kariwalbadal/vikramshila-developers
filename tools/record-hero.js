@@ -34,7 +34,7 @@ const H = parseInt(process.argv[4] || '900', 10);
     try { await cdp.send('Page.screencastFrameAck', { sessionId: ev.sessionId }); } catch (e) {}
   });
 
-  await page.goto(BASE + '/', { waitUntil: 'networkidle0', timeout: 30000 });
+  await page.goto(BASE + (process.argv[5] || '/'), { waitUntil: 'networkidle0', timeout: 30000 });
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 88, maxWidth: W, maxHeight: H, everyNthFrame: 1 });
 
   // swirl ~2.2s + canvas fade, then a settle beat

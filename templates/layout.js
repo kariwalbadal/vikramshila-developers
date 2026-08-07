@@ -54,6 +54,7 @@ function mobileActionBar() {
 function footer() {
   return `
 <footer class="site-footer">
+  <div class="footer-fx" aria-hidden="true"><video class="fx-video" muted loop playsinline preload="none" data-ambient-src="${u('/videos/ember-field.mp4')}"></video></div>
   <div class="colophon-top">
     <div class="wrap">
       <img src="${u('/images/brand/vd-mark-teal.png')}" alt="" aria-hidden="true" width="196" height="253">

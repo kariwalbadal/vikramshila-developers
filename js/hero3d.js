@@ -1,20 +1,23 @@
-// Vikramshila Developers — THE GOLDEN SWIRL.
+// Vikramshila Developers — THE LIGHTS COME HOME.
 //
-// Black. A sparse scatter of small golden squares appears and SWIRLS —
-// each one spiralling in along its own arc, the whole field turning like
-// one slow wind — and settles. Every square seats into its exact pixel of
-// the photograph, and the sharp image develops UNDERNEATH in lockstep
-// with the settling (its opacity is driven from the same clock, in the
-// same requestAnimationFrame), so the moment the last embers land the
-// picture is simply there. No pause, no pop, no seam — structurally
-// impossible for there to be a gap.
+// A true 3D arrival. The camera starts deep inside a dark corridor of
+// drifting window-lights — every light is a real pixel of the photograph,
+// scattered through forty units of DEPTH — and flies forward. Nearby
+// lights sweep past HUGE and fast; distant ones hang small and slow
+// (real motion parallax, real size attenuation, real fog). As the camera
+// passes each light it glides into its own window of the building, so the
+// photograph assembles ahead of you, wave by wave, and the camera glides
+// to rest exactly as the last dark pixels materialize and the image is
+// simply there. The lateral sway of the camera against the depth layers
+// is what makes the dimensionality unmistakable frame over frame.
 //
-// The whole unfurl: ~2.2 seconds.
+// Every depth cue is present this time: size-by-distance, motion
+// parallax, fog attenuation, near-light overexposure, and convergence.
+// (The previous engine kept all particles at z=0 — genuinely flat, and
+// the client called it correctly.)
 //
-// Craft constants inherited from earlier engines: the tan(fov/2)
-// point-size correction and seat-size overlap (kills 1px grid seams).
-// Scroll is never hijacked — a gesture just completes the reveal.
-// Reduced-motion and non-WebGL visitors get the photograph immediately.
+// Scroll accelerates, never hijacks. Reduced-motion / no WebGL / tainted
+// canvas: the photograph appears immediately.
 (function () {
   'use strict';
 
@@ -45,8 +48,9 @@
     return;
   }
 
-  var DUR = 2200;        // the whole unfurl
-  var SPAN = 0.48;       // one square's own spiral inside the global clock
+  var DUR = 3000;         // the flight
+  var SPAN = 0.30;        // one light's own glide into its window
+  var CORRIDOR = 42;      // how deep the light-field is, in world units
   var speed = 1;
   var lastGesture = 0;
 
@@ -54,7 +58,7 @@
     var now = performance.now();
     if (now - lastGesture < 250) return;
     lastGesture = now;
-    speed = speed < 6 ? 6 : 40;
+    speed = speed < 5 ? 5 : 30;
   };
   window.addEventListener('scroll', onGesture, { passive: true });
   window.addEventListener('wheel', onGesture, { passive: true });
@@ -81,51 +85,63 @@
       var planeW = 16, planeH = planeW / aspect;
 
       var aSlot = new Float32Array(count * 3);
+      var aScatter = new Float32Array(count * 3);
       var aPhoto = new Float32Array(count * 3);
       var aSeed = new Float32Array(count);
       var aDelay = new Float32Array(count);
-      var aSwirl = new Float32Array(count);
-
-      // arrival order: soft noise patches + brightness bias + jitter —
-      // the picture accretes organically, lit windows and sky first
-      function patchNoise(nx, ny) {
-        var v = 0.5 + 0.45 * Math.sin(nx * 5.1 + 1.7) * Math.sin(ny * 4.3 + 0.6)
-              + 0.10 * Math.sin(nx * 11.7 + ny * 9.1);
-        return Math.min(1, Math.max(0, v));
-      }
+      var aLight = new Float32Array(count);
 
       var i = 0;
       for (var y = 0; y < rows; y++) {
         for (var x = 0; x < cols; x++) {
           var i3 = i * 3;
-          aSlot[i3] = (x / (cols - 1) - 0.5) * planeW;
-          aSlot[i3 + 1] = (0.5 - y / (rows - 1)) * planeH;
-          aSlot[i3 + 2] = 0;
+          var sx = (x / (cols - 1) - 0.5) * planeW;
+          var sy = (0.5 - y / (rows - 1)) * planeH;
+          aSlot[i3] = sx; aSlot[i3 + 1] = sy; aSlot[i3 + 2] = 0;
 
           var di = (y * cols + x) * 4;
           var r = data[di] / 255, g = data[di + 1] / 255, b = data[di + 2] / 255;
           aPhoto[i3] = r; aPhoto[i3 + 1] = g; aPhoto[i3 + 2] = b;
 
           var lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-          aSeed[i] = Math.random();
-          // two populations: a sparse tranche of visible SWIRLERS carries the
-          // opening (gold arcs on black), while the mass of FILLERS stays
-          // invisible until it materializes at its seat — the image developing
-          var swirler = Math.random() < 0.09;
-          aSwirl[i] = swirler ? 1 : 0;
-          if (swirler) {
-            aDelay[i] = (1 - SPAN) * 0.55 * Math.pow(Math.random(), 1.3);
+          var seed = Math.random();
+          aSeed[i] = seed;
+
+          // the photograph's own light decides who flies: bright pixels
+          // (windows, lamps, sky glow) become the streaming lights
+          var isLight = lum > 0.5 && Math.random() < 0.22;
+          aLight[i] = isLight ? 1 : 0;
+
+          if (isLight) {
+            // scattered through the corridor's DEPTH; XY loosely prefigures
+            // the image (each light hovers outward of its own window)
+            var z = 6 + CORRIDOR * Math.pow(Math.random(), 0.85);
+            var spread = 1.15 + Math.random() * 1.25;
+            aScatter[i3] = sx * spread + (Math.random() - 0.5) * 3.2;
+            aScatter[i3 + 1] = sy * spread + (Math.random() - 0.5) * 2.6;
+            aScatter[i3 + 2] = z;
+            // deeper lights (near the plane) seat first: the wall assembles
+            // ahead of the camera, wave by wave
+            aDelay[i] = (1 - SPAN) * (0.62 * (z - 6) / CORRIDOR + 0.10 + 0.14 * Math.random());
           } else {
-            aDelay[i] = (1 - SPAN) * (0.42 + 0.58 * Math.min(1, Math.max(0,
-              0.40 * patchNoise(x / cols, y / rows) + 0.30 * (1 - lum) + 0.30 * Math.random())));
+            // the dark body of the image materializes at its seat, late
+            aScatter[i3] = sx + (Math.random() - 0.5) * 0.8;
+            aScatter[i3 + 1] = sy + (Math.random() - 0.5) * 0.8;
+            aScatter[i3 + 2] = 1.5 + Math.random() * 2.5;
+            // coherent patches (not random dither): neighbouring pixels
+            // surface together, so the image assembles in visible waves
+            var pn = 0.5 + 0.45 * Math.sin((x / cols) * 5.1 + 1.7) * Math.sin((y / rows) * 4.3 + 0.6)
+                   + 0.10 * Math.sin((x / cols) * 11.7 + (y / rows) * 9.1);
+            pn = Math.min(1, Math.max(0, pn));
+            aDelay[i] = (1 - SPAN) * (0.62 + 0.34 * (0.55 * pn + 0.25 * (1 - lum) + 0.20 * Math.random()));
           }
           i++;
         }
       }
 
       var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(42, media.clientWidth / media.clientHeight, 0.1, 100);
-      camera.position.z = 13;
+      var camera = new THREE.PerspectiveCamera(42, media.clientWidth / media.clientHeight, 0.1, 200);
+      camera.position.set(0, 0, 13 + CORRIDOR);
 
       var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -134,10 +150,11 @@
       var geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(aSlot, 3));
       geo.setAttribute('aSlot', new THREE.BufferAttribute(aSlot, 3));
+      geo.setAttribute('aScatter', new THREE.BufferAttribute(aScatter, 3));
       geo.setAttribute('aPhoto', new THREE.BufferAttribute(aPhoto, 3));
       geo.setAttribute('aSeed', new THREE.BufferAttribute(aSeed, 1));
       geo.setAttribute('aDelay', new THREE.BufferAttribute(aDelay, 1));
-      geo.setAttribute('aSwirl', new THREE.BufferAttribute(aSwirl, 1));
+      geo.setAttribute('aLight', new THREE.BufferAttribute(aLight, 1));
 
       var uniforms = {
         uTime: { value: 0 },
@@ -157,50 +174,58 @@
         blending: THREE.NormalBlending,
         vertexShader: [
           'attribute vec3 aSlot;',
+          'attribute vec3 aScatter;',
           'attribute vec3 aPhoto;',
           'attribute float aSeed;',
           'attribute float aDelay;',
-          'attribute float aSwirl;',
+          'attribute float aLight;',
           'uniform float uTime, uRaw, uSpan, uScale, uPitchWorld, uHeightPx, uTanHalf;',
           'varying vec3 vColor;',
           'varying float vAlpha;',
+          'varying float vShape;',   // 0 = glowing round light, 1 = square pixel
           'float easeInOut(float t){ return t < 0.5 ? 4.0*t*t*t : 1.0 - pow(-2.0*t + 2.0, 3.0) * 0.5; }',
-          'float easeOut(float t){ return 1.0 - pow(1.0 - t, 3.0); }',
           'void main(){',
           '  float lp = clamp((uRaw - aDelay) / uSpan, 0.0, 1.0);',
-          // THE SWIRL: each square spirals in — radius eases shut while the
-          // angle keeps advancing, all in one coherent rotational direction
-          // (one wind), speed varying square to square
-          '  float rad = uPitchWorld * uScale * mix(1.6 + aSeed * 2.4, 9.0 + aSeed * 9.0, aSwirl) * (1.0 - easeInOut(lp));',
-          '  float ang = aSeed * 6.2831 + mix(0.22, 0.85 + aSeed * 0.5, aSwirl) * 6.2831 * easeOut(lp) + uTime * 0.25;',
-          '  vec3 p = aSlot * uScale + vec3(cos(ang) * rad, sin(ang) * rad * 0.72, 0.0);',
+          '  float e = easeInOut(lp);',
+          // idle drift while afloat — lights breathe in place
+          '  vec3 sc = aScatter;',
+          '  sc.x += sin(uTime * 0.5 + aSeed * 21.0) * 0.35 * (1.0 - e);',
+          '  sc.y += cos(uTime * 0.4 + aSeed * 33.0) * 0.30 * (1.0 - e);',
+          // glide from the corridor into its own window on the plane
+          '  vec3 p = vec3(mix(sc.xy, aSlot.xy, e) * uScale, mix(sc.z, 0.0, e));',
           '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
           '  gl_Position = projectionMatrix * mv;',
-          // exact pitch at seat (tan(fov/2)-corrected), 1.12 overlap kills seams
-          '  float sizeWorld = uPitchWorld * uScale * mix(mix(0.9, 1.4, aSwirl), 1.12, easeOut(lp));',
-          '  gl_PointSize = sizeWorld * (uHeightPx * 0.5) / (uTanHalf * -mv.z);',
-          // gold in flight, its pixel colour only at the moment of seating
-          '  float fl = 0.74 + 0.26 * sin(uTime * (1.8 + aSeed * 2.6) + aSeed * 43.0);',
-          '  vec3 ember = mix(vec3(0.40, 0.23, 0.07), vec3(0.78, 0.50, 0.15), fract(aSeed * 7.31)) * fl;',
-          // swirlers stay gold almost to the seat; fillers turn to the
-          // pixel colour early — they ARE the image developing
-          '  float colorAt = mix(smoothstep(0.25, 0.70, lp), smoothstep(0.85, 1.0, lp), aSwirl);',
-          '  vColor = mix(ember, aPhoto, colorAt);',
-          // swirlers are born visibly ahead of flight; fillers surface only
-          // as they slide the last inch home
-          '  float birthS = smoothstep(aDelay - 0.16, aDelay - 0.05, uRaw);',
-          '  float birthF = smoothstep(0.55, 0.85, lp);',
-          '  float birth = mix(birthF, birthS, aSwirl);',
-          '  vAlpha = birth * mix(0.8 + 0.2 * fl, 1.0, lp);',
+          '  float dist = -mv.z;',
+          // real size-by-distance: near lights render huge, far ones tiny —
+          // the tan(fov/2)-corrected pitch keeps the seated grid exact
+          '  float sizeWorld = mix(uPitchWorld * uScale * (2.2 + aSeed * 2.0), uPitchWorld * uScale * 1.12, e);',
+          '  float px = sizeWorld * (uHeightPx * 0.5) / (uTanHalf * max(dist, 0.6));',
+          '  gl_PointSize = min(px, 150.0);',
+          // fog: distance eats light; the near field glows hot
+          '  float fog = clamp(1.0 - (dist - 4.0) / 52.0, 0.12, 1.0);',
+          '  float hot = 1.0 + 0.5 * clamp(1.0 - dist / 9.0, 0.0, 1.0);',
+          '  vec3 lightC = (aPhoto * 1.18 + vec3(0.10, 0.06, 0.02)) * hot;',
+          '  vColor = mix(aPhoto, lightC * fog, (1.0 - e) * aLight);',
+          // darks surface only as they seat; lights are visible all along,
+          // but never when they sit behind the camera
+          '  float birthDark = smoothstep(0.22, 0.6, lp);',
+          '  float vis = mix(birthDark, 0.9 + 0.1 * sin(uTime * (1.2 + aSeed * 2.0) + aSeed * 40.0), aLight);',
+          '  vis *= step(mv.z, -0.6);',
+          '  vAlpha = vis;',
+          '  vShape = mix(1.0, e, aLight);',
           '}',
         ].join('\n'),
         fragmentShader: [
           'varying vec3 vColor;',
           'varying float vAlpha;',
+          'varying float vShape;',
           'void main(){',
           '  vec2 q = gl_PointCoord - 0.5;',
+          '  float d = length(q);',
+          '  float glow = smoothstep(0.5, 0.08, d);',            // soft light with halo
           '  float m = max(abs(q.x), abs(q.y));',
-          '  float a = (1.0 - smoothstep(0.44, 0.5, m)) * vAlpha;',
+          '  float square = 1.0 - smoothstep(0.44, 0.5, m);',
+          '  float a = mix(glow, square, vShape) * vAlpha;',
           '  if (a < 0.012) discard;',
           '  gl_FragColor = vec4(vColor, a);',
           '}',
@@ -214,7 +239,7 @@
       function fit() {
         var vFov = (camera.fov * Math.PI) / 180;
         var halfTan = Math.tan(vFov / 2);
-        var visH = 2 * halfTan * camera.position.z;
+        var visH = 2 * halfTan * 13;
         var visW = visH * camera.aspect;
         var scale = Math.max(visW / planeW, visH / planeH) * 1.02;
         uniforms.uScale.value = scale;
@@ -231,6 +256,7 @@
         var v = Math.min(1, Math.max(0, (t - a) / (b - a)));
         return v * v * (3 - 2 * v);
       }
+      function easeInOutCubic(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
       var last = performance.now();
       var raw = 0;
@@ -245,15 +271,24 @@
         raw = Math.min(1, raw + (dt * 1000 / DUR) * speed);
         uniforms.uRaw.value = raw;
 
-        // the photograph develops in lockstep with the settling — same clock,
-        // same frame — reaching full strength exactly as the last squares seat
-        var dev = smooth(0.50, 0.97, raw);
+        // THE DOLLY: the camera rides the corridor and settles at the plane's
+        // framing distance; its lateral sway against the depth layers is the
+        // parallax that reads as space
+        var travel = easeInOutCubic(Math.min(1, raw / 0.94));
+        var decay = Math.pow(1 - travel, 1.15);
+        camera.position.z = 13 + CORRIDOR * (1 - travel);
+        camera.position.x = Math.sin(raw * Math.PI * 1.6) * 1.5 * decay;
+        camera.position.y = Math.cos(raw * Math.PI * 1.1) * 0.6 * decay;
+        camera.lookAt(0, 0, 0);
+
+        // the sharp photograph develops beneath the seating pixels at the end
+        var dev = smooth(0.78, 0.985, raw);
         heroImg.style.opacity = dev.toFixed(3);
         if (scrim) scrim.style.opacity = dev.toFixed(3);
 
         renderer.render(scene, camera);
 
-        if (raw >= 0.8 && !titled) {
+        if (raw >= 0.86 && !titled) {
           titled = true;
           cover.classList.add('h3-resolved');
         }
@@ -262,13 +297,13 @@
           heroImg.style.opacity = '1';
           if (scrim) scrim.style.opacity = '1';
           var ease = getComputedStyle(document.documentElement).getPropertyValue('--ease').trim() || 'ease';
-          canvas.style.transition = 'opacity 450ms ' + ease;
+          canvas.style.transition = 'opacity 500ms ' + ease;
           canvas.style.opacity = '0';
           setTimeout(function () {
             stopped = true;
             geo.dispose(); mat.dispose(); renderer.dispose();
             canvas.style.display = 'none';
-          }, 520);
+          }, 560);
         }
         if (!stopped) requestAnimationFrame(frame);
       }
