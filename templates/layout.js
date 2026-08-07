@@ -10,57 +10,32 @@ function u(p) {
   return site.basePath + p;
 }
 
-function navLink(item, path, cls) {
-  var active = item.href === path ? ' class="is-active"' : '';
-  return `<a href="${u(item.href)}"${active}>${esc(item.label)}</a>`;
-}
-
-/* The masthead is the front page of a journal: an info bar, the company's own
-   mark and wordmark, then a ruled nav rail. It scrolls away; a compact bar
-   slides in once it's gone (see js/site.js). */
+/* The chrome is nearly nothing: a floating mark, three labels, one action.
+   It rides above the media transparent-and-light, and gains an ivory glass
+   back once the page scrolls (see js/site.js). The media is the page. */
 function header(path) {
+  var nav = [
+    { label: 'Projects', href: '/our-projects/' },
+    { label: 'About', href: '/about-us/' },
+    { label: 'Contact', href: '/contact-us/' },
+  ];
   return `
 <div class="scroll-progress"></div>
-<header>
-  <div class="topbar">
-    <div class="wrap topbar-inner">
-      <span>Bhagalpur &middot; Deoghar &mdash; Bihar &amp; Jharkhand</span>
-      <span class="t-mid">Est. over a decade ago</span>
-      <a href="${site.phones.primaryHref}">Call ${site.phones.primary}</a>
-    </div>
-  </div>
-  <div class="masthead">
-    <a class="masthead-mark" href="${u('/')}" aria-label="Vikramshila Developers — home">
-      <img src="${u('/images/brand/vd-mark.png')}" alt="Vikramshila Developers mark — a teal bird over the letters VD" width="412" height="452">
-    </a>
-    <div class="masthead-word">Vikramshila Developers</div>
-    <div class="masthead-motto">Creation &middot; Not &middot; Construction</div>
-  </div>
-  <nav class="nav-rail" aria-label="Primary">
-    <div class="wrap nav-rail-inner">
-      ${site.nav.map((n) => navLink(n, path)).join('\n      ')}
-    </div>
+<header class="chrome" data-chrome>
+  <a href="${u('/')}" class="chrome-brand">
+    <img src="${u('/images/brand/vd-mark.png')}" alt="" aria-hidden="true" width="412" height="452">
+    <span>Vikramshila<br>Developers</span>
+  </a>
+  <nav class="chrome-nav" aria-label="Primary">
+    ${nav.map((n) => `<a href="${u(n.href)}"${n.href === path ? ' class="is-active"' : ''}>${esc(n.label)}</a>`).join('\n    ')}
+    <a class="chrome-tel" href="${site.phones.primaryHref}">${site.phones.primary}</a>
+    <a class="chrome-cta" href="${u('/contact-us/')}">Enquire</a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span></button>
   </nav>
 </header>
-<div class="compact-bar" data-compact>
-  <div class="wrap compact-inner">
-    <a href="${u('/')}" class="cb-brand">
-      <img src="${u('/images/brand/vd-mark.png')}" alt="" aria-hidden="true" width="412" height="452">
-      <span>Vikramshila Developers</span>
-    </a>
-    <nav class="cb-nav" aria-label="Primary, compact">
-      ${site.nav.map((n) => navLink(n, path)).join('\n      ')}
-    </nav>
-    <div class="cb-cta">
-      <a class="btn btn-brass" href="${u('/contact-us/')}">Enquire</a>
-      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
-        <span></span>
-      </button>
-    </div>
-  </div>
-</div>
 <div class="mobile-nav">
-  ${site.nav.map((n) => `<a href="${u(n.href)}">${esc(n.label)}</a>`).join('\n  ')}
+  <a href="${u('/')}">Home</a>
+  ${site.nav.slice(1).map((n) => `<a href="${u(n.href)}">${esc(n.label)}</a>`).join('\n  ')}
   <div class="mobile-cta">
     <a class="btn btn-brass" href="${site.phones.primaryHref}">Call ${site.phones.primary}</a>
     <a class="btn btn-ghost" href="${site.whatsapp.href}" target="_blank" rel="noopener">WhatsApp</a>
@@ -121,7 +96,7 @@ function layout(opts) {
   var description = opts.description;
   var path = opts.path;
   var canonical = site.siteUrl + path;
-  var ogImage = opts.ogImage ? site.siteUrl + opts.ogImage : site.siteUrl + '/images/optimized/hero-monument-clean.jpg';
+  var ogImage = opts.ogImage ? site.siteUrl + opts.ogImage : site.siteUrl + '/images/upscaled/hero-monument-clean-4k.jpg';
   var jsonLd = opts.jsonLd || [];
   var bodyClass = opts.bodyClass || '';
   var extraHead = opts.extraHead || '';
@@ -146,7 +121,7 @@ function layout(opts) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${ogImage}">
-<link rel="preload" href="${u('/fonts/BodoniModa-Roman-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${u('/fonts/Marcellus-Regular.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${u('/fonts/Inter-Variable.woff2')}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${u('/css/tokens.css')}">
 <link rel="stylesheet" href="${u('/css/site.css')}">
@@ -160,6 +135,9 @@ ${opts.body}
 </main>
 ${footer()}
 ${mobileActionBar()}
+<script src="${u('/vendor/gsap.min.js')}" defer></script>
+<script src="${u('/vendor/ScrollTrigger.min.js')}" defer></script>
+<script src="${u('/vendor/lenis.min.js')}" defer></script>
 <script src="${u('/js/site.js')}" defer></script>
 ${scripts.map((s) => `<script src="${u(s)}" defer></script>`).join('\n')}
 </body>

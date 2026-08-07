@@ -1,5 +1,15 @@
+const fs = require('fs');
+const path = require('path');
 const site = require('../content/site');
 const { esc, u } = require('./layout');
+
+// prefer the Real-ESRGAN 4K master when one exists
+function plate(file) {
+  var base = file.replace(/\.[^.]+$/, '');
+  var up = 'images/upscaled/' + base + '-4k.jpg';
+  if (fs.existsSync(path.resolve(__dirname, '..', up))) return u('/' + up);
+  return u('/images/optimized/' + file);
+}
 
 /* ------------------------------------------------------------------ *
  * A project page is a FEATURE ARTICLE: title block, plate, the facts
@@ -35,9 +45,9 @@ function artHead(p) {
 
 function artPlate(p) {
   return `
-<figure style="margin:0" data-proj-hero>
+<figure style="margin:0" data-proj-hero data-parallax>
   <div class="art-plate">
-    <img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
+    <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" fetchpriority="high">
   </div>
   <figcaption class="wrap"><span class="plate-cap">
     <span><span class="num">Fig. 01</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span>
@@ -182,12 +192,16 @@ function amenitiesSection(p) {
 /* Atmosphere — explicitly labelled. Never a photograph of the project,
    and the caption line says so itself, unprompted. */
 function moodBand(p) {
-  var plate = p.moodPlate || 'interior-warm';
+  // three generated atmospheres rotate across projects so no two adjacent
+  // pages share a band; all are labelled as illustrative
+  var moods = ['dusk-sky', 'relief-torchlight', 'ember-field'];
+  var moodFile = moods[p.slug.length % moods.length];
   var line = p.moodLine || 'A home is finished long after the structure is. The rest is the part you live in.';
   return `
 <figure style="margin:0" aria-label="Atmosphere">
-  <div class="art-plate is-loaded">
-    <img src="${u('/images/mood/' + plate + '.jpg')}" alt="Interior atmosphere — illustrative, not a photograph of ${esc(p.name)}" loading="lazy" style="height:clamp(300px,52svh,560px)">
+  <div class="art-plate is-loaded ambient">
+    <img src="${u('/images/generated/' + moodFile + '.jpg')}" alt="Atmosphere — illustrative, not a photograph of ${esc(p.name)}" loading="lazy" style="height:clamp(300px,52svh,560px)">
+    <video class="ambient-video" muted loop playsinline preload="none" poster="${u('/images/generated/' + moodFile + '.jpg')}" data-ambient-src="${u('/videos/' + moodFile + '.mp4')}" aria-hidden="true"></video>
   </div>
   <figcaption class="wrap"><span class="plate-cap">
     <span><span class="num">Atmosphere</span> &mdash; illustrative only, not a photograph of ${esc(p.name)}</span>
@@ -234,9 +248,9 @@ function gallerySection(p) {
     <div class="gal-stack">
       ${imgs.map(function (f, i) {
         var fig = 'Fig. ' + String(i + 2).padStart(2, '0');
-        return `<figure class="gal-plate reveal">
-          <a href="${u('/images/optimized/' + f)}" data-lightbox data-caption="${esc(p.name)}, ${esc(p.location)}">
-            <img src="${u('/images/optimized/' + f)}" alt="${esc(p.name)}, ${esc(p.location)} — view ${i + 1}" loading="lazy">
+        return `<figure class="gal-plate reveal" data-parallax>
+          <a href="${plate(f)}" data-lightbox data-caption="${esc(p.name)}, ${esc(p.location)}">
+            <img src="${plate(f)}" alt="${esc(p.name)}, ${esc(p.location)} — view ${i + 1}" loading="lazy">
           </a>
           <figcaption class="plate-cap"><span><span class="num">${fig}</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span><span>Tap to enlarge</span></figcaption>
         </figure>`;

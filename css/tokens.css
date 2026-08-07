@@ -35,8 +35,10 @@
   --rule-strong:rgba(18,20,16,0.72);
   --rule-on-ink:rgba(239,236,225,0.2);
 
-  /* type */
-  --font-display:'Bodoni Moda','Didot','Bodoni MT','Georgia',serif;
+  /* type — display is Marcellus: inscriptional, EVEN stroke weight.
+     (Bodoni's hairline thins failed legibility on images and at section-
+     heading sizes — client call, and correct.) */
+  --font-display:'Marcellus','Iowan Old Style','Georgia',serif;
   --font-ui:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
   --radius-sm:2px;

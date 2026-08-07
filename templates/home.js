@@ -1,58 +1,93 @@
+const fs = require('fs');
+const path = require('path');
 const site = require('../content/site');
 const { RESIDENTIAL, HOSPITALITY, STUBS } = require('../content/projects');
 const { esc, u } = require('./layout');
 
-/* The home page is the front page of an issue: cover plate, dateline,
-   the index of grounds (with a cursor-following preview), one cover story,
-   the standard as a spec sheet, the numbers, a letter, the enquiry desk.
-   Dense and ruled — information per screen, not air. */
+/* The home page is one continuous film on a white stage.
+   Full-viewport chapters stack and slide over one another as the visitor
+   scrolls (Lenis inertia + scrubbed parallax, see js/site.js); each chapter
+   is a single huge photograph and a few words. The chrome floats. */
+
+// prefer the Real-ESRGAN 4K master when one exists
+function plate(file) {
+  var base = file.replace(/\.[^.]+$/, '');
+  var up = 'images/upscaled/' + base + '-4k.jpg';
+  if (fs.existsSync(path.resolve(__dirname, '..', up))) return u('/' + up);
+  return u('/images/optimized/' + file);
+}
 
 function cover() {
-  return `
-<section class="cover" data-hero>
+  var guard = `<script>(function(){
+  try{var c=document.createElement('canvas');
+  if(window.WebGLRenderingContext&&(c.getContext('webgl')||c.getContext('experimental-webgl'))&&!(matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    document.documentElement.classList.add('h3-pending');
+    setTimeout(function(){document.documentElement.classList.remove('h3-pending');},5000);
+  }}catch(e){}
+})();</script>`;
+  return `${guard}
+<section class="chapter chapter-hero cover" data-hero data-hero3d>
   <div class="cover-media">
-    <img src="${u('/images/optimized/hero-monument-clean.jpg')}" alt="Shivalaya residence at dusk, warm-lit windows behind a palm-lined Deoghar street" fetchpriority="high">
+    <img src="${plate('hero-monument-clean.jpg')}" alt="Shivalaya residence at dusk, warm-lit windows behind a palm-lined Deoghar street" fetchpriority="high">
+    <canvas id="hero3d-canvas" aria-hidden="true"></canvas>
     <div class="cover-scrim"></div>
     <div class="cover-inner">
       <div>
-        <div class="cover-kicker">Vikramshila Developers &middot; Bihar &amp; Jharkhand</div>
+        <div class="cover-kicker">Bihar &amp; Jharkhand &middot; Est. over a decade ago</div>
         <h1 class="cover-title">
           <span class="line"><span>Creation,</span></span>
           <span class="line"><span>not construction.</span></span>
         </h1>
-        <p class="cover-standfirst">Homes a family will hand down for generations — named, deliberately, after the university that once made this ground legendary.</p>
+        <p class="cover-standfirst">Homes a family will hand down for generations.</p>
         <div class="cover-actions">
-          <a class="btn btn-brass" href="${u('/our-projects/')}">View the Projects</a>
-          <a class="btn btn-ghost" href="${site.phones.primaryHref}">Call ${site.phones.primary}</a>
+          <a class="btn btn-brass" href="${u('/our-projects/')}">The Projects</a>
+          <a class="btn btn-ghost" href="${site.whatsapp.href}" target="_blank" rel="noopener">WhatsApp Us</a>
         </div>
       </div>
     </div>
-  </div>
-  <div class="wrap">
-    <div class="plate-cap">
-      <span><span class="num">Cover</span> &mdash; Shivalaya, Deoghar, at dusk</span>
-      <span>The grounds of Bhagalpur &amp; Deoghar</span>
-    </div>
+    <div class="chapter-index">01 &mdash; Shivalaya, Deoghar</div>
   </div>
 </section>`;
 }
 
-function dateline() {
-  return `
-<div class="dateline">
-  <div class="wrap dateline-inner">
-    <span>Est. over a decade ago</span>
-    <span><b>9</b> developments delivered &amp; underway</span>
-    <span><b>250</b> satisfied families</span>
-    <span><b>1,00,000+</b> sq ft developed</span>
-    <span>Bhagalpur &middot; Deoghar</span>
+function groundChapters() {
+  var order = ['keshavam-apartment', 'sunrise', 'tejprabharesidency', 'chandeshwar-apartment', 'jagdish-enclave', 'annapurna-heights'];
+  var all = RESIDENTIAL.concat(HOSPITALITY);
+  var picks = order.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
+
+  return picks.map((p, i) => `
+<section class="chapter chapter-ground" data-chapter>
+  <div class="chapter-media"><img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy"></div>
+  <div class="chapter-scrim"></div>
+  <div class="chapter-copy">
+    <div class="chapter-meta">${esc(p.location)} &middot; ${esc(p.status)}${p.unitSummary ? ' &middot; ' + esc(p.unitSummary) : ''}</div>
+    <h2 class="chapter-name"><a href="${u('/' + p.slug + '/')}">${esc(p.name)}</a></h2>
+    <a class="chapter-link" href="${u('/' + p.slug + '/')}">View the ground <span class="arrow">&rarr;</span></a>
   </div>
-</div>`;
+  <div class="chapter-index">${String(i + 2).padStart(2, '0')} &mdash; ${esc(p.name)}</div>
+</section>`).join('');
 }
 
-function indexRow(p, i) {
+function numbersChapter() {
   return `
-    <a class="index-row" href="${u('/' + p.slug + '/')}" data-preview="${u('/images/optimized/' + p.heroImage)}">
+<section class="chapter chapter-paper" data-chapter-static>
+  <div class="wrap numbers-stage">
+    <div class="numbers-line reveal">
+      ${site.stats.map((s) => `
+      <div class="bignum">
+        <span class="stat" data-countup="${s.value}" data-suffix="${esc(s.suffix)}">0</span>
+        <span class="label">${esc(s.label)}</span>
+      </div>`).join('')}
+    </div>
+    <p class="numbers-note reveal">Figures as published by Vikramshila Developers. ${esc(site.namesakeShort)}</p>
+  </div>
+</section>`;
+}
+
+function ledger() {
+  var all = RESIDENTIAL.concat(HOSPITALITY);
+  var rows = all.map((p, i) => `
+    <a class="index-row" href="${u('/' + p.slug + '/')}" data-preview="${plate(p.heroImage)}">
       <span class="index-no">${String(i + 1).padStart(2, '0')}</span>
       <span class="index-name">${esc(p.name)}</span>
       <span class="index-meta m1">${esc(p.location)}</span>
@@ -60,11 +95,7 @@ function indexRow(p, i) {
       <span class="index-meta m3">${esc(p.status)}</span>
       <span class="index-arrow" aria-hidden="true">&rarr;</span>
       <img class="index-thumb" src="${u('/images/optimized/' + p.heroImage)}" alt="" aria-hidden="true" loading="lazy">
-    </a>`;
-}
-
-function indexSection() {
-  var rows = RESIDENTIAL.concat(HOSPITALITY).map(indexRow).join('');
+    </a>`).join('');
   var stubs = STUBS.map((s) => `
     <div class="stub-row">
       <span class="n">${esc(s.name)}</span>
@@ -74,101 +105,11 @@ function indexSection() {
 <section class="section" data-index>
   <div class="wrap">
     <div class="sec-row reveal">
-      <span class="eyebrow">The Index</span>
+      <span class="eyebrow">Every Development</span>
       <span class="sec-note">Nine grounds &middot; one standard</span>
     </div>
     <div class="index reveal">${rows}</div>
-    <div style="margin-top:36px" class="reveal">
-      <div class="sec-row" style="margin-bottom:0"><span class="eyebrow">Also named, not yet documented</span></div>
-      ${stubs}
-    </div>
-  </div>
-</section>`;
-}
-
-function coverStory() {
-  var p = RESIDENTIAL.find((x) => x.slug === 'keshavam-apartment') || RESIDENTIAL[0];
-  var facts = [
-    ['Location', p.location],
-    ['Status', p.status],
-    ['Configuration', p.unitSummary || '—'],
-  ];
-  return `
-<section class="section section-shade">
-  <div class="wrap">
-    <div class="sec-row reveal">
-      <span class="eyebrow">From the Grounds</span>
-      <span class="sec-note">Featured development</span>
-    </div>
-    <div class="story reveal">
-      <figure class="story-media" style="margin:0">
-        <img src="${u('/images/optimized/' + p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" loading="lazy" width="1200" height="900">
-        <figcaption class="plate-cap" style="margin-top:0;padding-top:10px">
-          <span><span class="num">Fig. 01</span> &mdash; ${esc(p.name)}, ${esc(p.location)}</span>
-          <span>Developer&rsquo;s render</span>
-        </figcaption>
-      </figure>
-      <div class="story-body">
-        <h3>${esc(p.name)}</h3>
-        <div class="loc">${esc(p.location)}</div>
-        <dl class="story-facts" style="margin-top:18px">
-          ${facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}
-        </dl>
-        ${p.description ? `<p class="txt">${esc(p.description)}</p>` : ''}
-        <a class="link-more" href="${u('/' + p.slug + '/')}" style="margin-top:18px">Read the full page <span class="arrow">&rarr;</span></a>
-      </div>
-    </div>
-  </div>
-</section>`;
-}
-
-function standardSheet() {
-  var items = site.standards.map((s) => `
-      <div class="std-item reveal">
-        <span class="n">${esc(s.n)}</span>
-        <h3>${esc(s.title)}</h3>
-        <p>${esc(s.body)}</p>
-      </div>`).join('');
-  return `
-<section class="section">
-  <div class="wrap">
-    <div class="sec-row reveal">
-      <span class="eyebrow">The Standard</span>
-      <span class="sec-note">Written into every specification &mdash; not marketing copy</span>
-    </div>
-    <div class="std-sheet">${items}</div>
-  </div>
-</section>`;
-}
-
-function numbers() {
-  var cells = site.stats.map((s) => `
-      <div>
-        <span class="stat" data-countup="${s.value}" data-suffix="${esc(s.suffix)}">0</span>
-        <span class="label">${esc(s.label)}</span>
-      </div>`).join('');
-  return `
-<section class="section-tight">
-  <div class="wrap">
-    <div class="numrow reveal">${cells}</div>
-    <p style="margin-top:12px;font-size:11px;color:var(--text-soft)">Figures as published by Vikramshila Developers.</p>
-  </div>
-</section>`;
-}
-
-function letter() {
-  return `
-<section class="section">
-  <div class="wrap">
-    <div class="sec-row reveal">
-      <span class="eyebrow">From the Name</span>
-      <span class="sec-note">Why Vikramshila</span>
-    </div>
-    <div class="letter reveal">
-      <p class="dropcap">${esc(site.aboutCopy[0])}</p>
-      <p class="muted">${esc(site.namesakeShort)}</p>
-      <a class="link-more" href="${u('/about-us/')}">Our story <span class="arrow">&rarr;</span></a>
-    </div>
+    ${stubs}
   </div>
 </section>`;
 }
@@ -177,18 +118,14 @@ function enquiry() {
   return `
 <section class="section section-shade">
   <div class="wrap">
-    <div class="sec-row reveal">
-      <span class="eyebrow">The Enquiry Desk</span>
-      <span class="sec-note">A member of the team replies directly</span>
-    </div>
-    <div class="enquiry-grid">
+    <h2 class="close-line reveal">See it in person.</h2>
+    <div class="enquiry-grid" style="margin-top:clamp(28px,4vw,52px)">
       <div class="reveal">
         <div class="contact-table">
           <div><span class="k">Sales</span><span class="v"><a href="${site.phones.primaryHref}">${site.phones.primary}</a></span></div>
-          <div><span class="k">Office</span><span class="v"><a href="${site.phones.secondaryHref}">${site.phones.secondary}</a></span></div>
           <div><span class="k">WhatsApp</span><span class="v"><a href="${site.whatsapp.href}" target="_blank" rel="noopener">${site.whatsapp.label}</a></span></div>
           <div><span class="k">Email</span><span class="v"><a href="mailto:${site.email}">${site.email}</a></span></div>
-          <div><span class="k">Office address</span><span class="v" style="max-width:34ch">${esc(site.address.line1)}, ${esc(site.address.line2)}</span></div>
+          <div><span class="k">Office</span><span class="v" style="max-width:34ch">${esc(site.address.line1)}, ${esc(site.address.line2)}</span></div>
         </div>
       </div>
       <form class="enquiry-form reveal" action="mailto:${site.email}" method="get" enctype="text/plain">
@@ -203,7 +140,7 @@ function enquiry() {
         </div>
         <div class="field"><label for="message">Message</label><textarea id="message" name="message" rows="3"></textarea></div>
         <button class="btn btn-brass" type="submit" style="width:100%">Send Enquiry</button>
-        <p class="form-note">This opens your email app with the details filled in. Prefer to talk now? Call <a href="${site.phones.primaryHref}">${site.phones.primary}</a> or message us on WhatsApp.</p>
+        <p class="form-note">Opens your email app with the details filled in. Prefer to talk? Call <a href="${site.phones.primaryHref}">${site.phones.primary}</a>.</p>
       </form>
     </div>
   </div>
@@ -211,6 +148,8 @@ function enquiry() {
 }
 
 module.exports = function homePage() {
-  var body = cover() + dateline() + indexSection() + coverStory() + standardSheet() + numbers() + letter() + enquiry();
-  return { body: body, scripts: [] };
+  var body = cover() +
+    '<div class="film">' + groundChapters() + '</div>' +
+    numbersChapter() + ledger() + enquiry();
+  return { body: body, scripts: ['/js/hero3d.js'] };
 };

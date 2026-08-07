@@ -1,10 +1,12 @@
-// Vikramshila Developers — site-wide motion system. Vanilla JS, no deps.
+// Vikramshila Developers — site-wide motion system.
+// Lenis inertia scroll + GSAP ScrollTrigger scrubbed chapters, with plain
+// fallbacks everywhere: no library, no motion — the content still stands.
 (function () {
   'use strict';
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- cover / article load choreography ---------- */
+  /* ---------- load choreography: covers and article heads rise ---------- */
   var loadTargets = document.querySelectorAll('[data-hero], .art-head, [data-proj-hero]');
   if (loadTargets.length) {
     requestAnimationFrame(function () {
@@ -14,16 +16,52 @@
     });
   }
 
-  /* ---------- compact bar slides in once the masthead scrolls away ---------- */
-  var compact = document.querySelector('[data-compact]');
-  var masthead = document.querySelector('header');
-  if (compact && masthead) {
-    var onScrollCompact = function () {
-      compact.classList.toggle('is-shown', window.scrollY > masthead.offsetHeight - 10);
+  /* ---------- inertia scroll (the feel of the whole site) ---------- */
+  var lenis = null;
+  if (!reduceMotion && window.Lenis) {
+    lenis = new window.Lenis({ lerp: 0.1, wheelMultiplier: 1.0 });
+    var lraf = function (time) { lenis.raf(time); requestAnimationFrame(lraf); };
+    requestAnimationFrame(lraf);
+  }
+
+  /* ---------- scrubbed chapter parallax ---------- */
+  if (!reduceMotion && window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    if (lenis) lenis.on('scroll', ScrollTrigger.update);
+
+    document.querySelectorAll('[data-chapter] .chapter-media img').forEach(function (img) {
+      gsap.fromTo(img,
+        { yPercent: -6, scale: 1.16 },
+        { yPercent: 6, scale: 1.08, ease: 'none',
+          scrollTrigger: { trigger: img.closest('[data-chapter]'), start: 'top bottom', end: 'bottom top', scrub: true } });
+    });
+    document.querySelectorAll('[data-chapter] .chapter-copy').forEach(function (el) {
+      gsap.fromTo(el, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+        scrollTrigger: { trigger: el.closest('[data-chapter]'), start: 'top 55%' } });
+    });
+    // gentle drift on any flagged plate (project pages)
+    document.querySelectorAll('[data-parallax] img').forEach(function (img) {
+      gsap.fromTo(img,
+        { yPercent: -4, scale: 1.12 },
+        { yPercent: 4, scale: 1.06, ease: 'none',
+          scrollTrigger: { trigger: img.closest('[data-parallax]'), start: 'top bottom', end: 'bottom top', scrub: true } });
+    });
+  } else {
+    // no GSAP/motion: chapter copy must simply be visible
+    document.querySelectorAll('.chapter-copy').forEach(function (el) { el.style.opacity = '1'; });
+  }
+
+  /* ---------- chrome state ---------- */
+  var chrome = document.querySelector('[data-chrome]');
+  if (chrome) {
+    var isHome = document.body.classList.contains('is-home');
+    if (!isHome) chrome.classList.add('on-light');
+    var onScrollChrome = function () {
+      var y = window.scrollY;
+      chrome.classList.toggle('is-solid', isHome ? y > window.innerHeight * 0.82 : y > 24);
     };
-    onScrollCompact();
-    window.addEventListener('scroll', onScrollCompact, { passive: true });
-    window.addEventListener('resize', onScrollCompact);
+    onScrollChrome();
+    window.addEventListener('scroll', onScrollChrome, { passive: true });
   }
 
   /* ---------- scroll progress hairline ---------- */
@@ -40,10 +78,7 @@
     window.addEventListener('resize', onScrollProgress);
   }
 
-  /* ---------- enquiry forms: build a real mailto body in JS ----------
-     A native <form action="mailto:..."> silently drops every field except
-     subject/body/cc/bcc regardless of method/enctype — mail clients only
-     read those four params. Build the message ourselves instead. */
+  /* ---------- enquiry forms: build a real mailto body in JS ---------- */
   document.querySelectorAll('.enquiry-form').forEach(function (form) {
     var email = (form.getAttribute('action') || '').replace(/^mailto:/, '') || 'indiavdpl@gmail.com';
     form.addEventListener('submit', function (e) {
@@ -68,12 +103,14 @@
     toggle.addEventListener('click', function () {
       var open = mobileNav.classList.toggle('is-open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      document.body.style.overflow = open ? 'hidden' : '';
+      if (open) { if (lenis) lenis.stop(); document.body.style.overflow = 'hidden'; }
+      else { if (lenis) lenis.start(); document.body.style.overflow = ''; }
     });
     mobileNav.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () {
         mobileNav.classList.remove('is-open');
         toggle.setAttribute('aria-expanded', 'false');
+        if (lenis) lenis.start();
         document.body.style.overflow = '';
       });
     });
@@ -103,9 +140,7 @@
     }
   }
 
-  /* ---------- the index preview: a plate that follows the cursor ----------
-     Desktop-only, pointer-events:none, position clamped to the viewport so
-     it can never cause horizontal overflow. Hidden entirely on touch. */
+  /* ---------- the index preview: a plate that follows the cursor ---------- */
   var indexSections = document.querySelectorAll('[data-index]');
   var canHover = window.matchMedia('(hover: hover)').matches;
   if (indexSections.length && canHover && !reduceMotion) {
@@ -145,7 +180,6 @@
         sec.querySelectorAll('.index-row[data-preview]').forEach(function (row) {
           row.addEventListener('mouseenter', function () {
             if (!loaded) {
-              // fetch lazily, on first hover, so the page load never pays for it
               preview.querySelectorAll('img').forEach(function (img) { img.src = img.getAttribute('data-src'); });
               loaded = true;
             }
@@ -164,6 +198,23 @@
         });
       });
     }
+  }
+
+  /* ---------- ambient videos: load lazily, play only while visible ---------- */
+  var ambients = document.querySelectorAll('video[data-ambient-src]');
+  if (ambients.length && !reduceMotion && 'IntersectionObserver' in window) {
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var v = entry.target;
+        if (entry.isIntersecting) {
+          if (!v.src) { v.src = v.getAttribute('data-ambient-src'); }
+          v.play().then(function () { v.classList.add('is-playing'); }).catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    ambients.forEach(function (v) { vio.observe(v); });
   }
 
   /* ---------- count-up numerals (Indian digit grouping: 1,00,000) ---------- */

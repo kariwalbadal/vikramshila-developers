@@ -4,9 +4,9 @@
    livery (their teal, their Didone). No italics anywhere. */
 
 @font-face{
-  font-family:'Bodoni Moda';
-  src:url('../fonts/BodoniModa-Roman-Variable.woff2') format('woff2-variations'), url('../fonts/BodoniModa-Roman-Variable.woff2') format('woff2');
-  font-weight:400 900; font-style:normal; font-display:swap;
+  font-family:'Marcellus';
+  src:url('../fonts/Marcellus-Regular.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
 }
 @font-face{
   font-family:'Inter';
@@ -79,85 +79,66 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
   outline:2px solid var(--teal);outline-offset:3px;border-radius:2px;
 }
 
-/* ---------- masthead ---------- */
-.topbar{border-bottom:1px solid var(--rule)}
-.topbar-inner{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding-block:9px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--text-soft);font-weight:600;
-}
-.topbar-inner a{min-height:auto}
-.topbar-inner .t-mid{display:none}
-@media(min-width:860px){.topbar-inner .t-mid{display:block}}
-
-.masthead{text-align:center;padding:clamp(22px,4vw,44px) var(--gutter) clamp(16px,2.6vw,26px)}
-.masthead-mark{display:inline-block}
-.masthead-mark img{height:clamp(40px,6vw,58px);width:auto;margin-inline:auto}
-.masthead-word{
-  font-family:var(--font-display);font-weight:560;font-variation-settings:'opsz' 96;
-  font-size:clamp(1.7rem,4.6vw,3.4rem);letter-spacing:0.06em;text-transform:uppercase;
-  color:var(--text);margin-top:10px;line-height:1.04;
-}
-.masthead-motto{
-  margin-top:10px;font-size:9.5px;letter-spacing:0.34em;text-transform:uppercase;
-  color:var(--accent-text);font-weight:600;
-}
-
-.nav-rail{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.nav-rail-inner{display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,18px);flex-wrap:wrap}
-.nav-rail a{
-  font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-soft);
-  padding:15px 10px;min-height:44px;display:inline-flex;align-items:center;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
-  transition:color .3s var(--ease),border-color .3s var(--ease);
-}
-/* all four links must hold one line on a 360px phone */
-@media(max-width:480px){
-  .nav-rail-inner{gap:2px;flex-wrap:nowrap}
-  .nav-rail a{font-size:9.5px;letter-spacing:0.1em;padding:14px 6px}
-}
-.nav-rail a:hover{color:var(--text)}
-.nav-rail a.is-active{color:var(--text);border-bottom-color:var(--ink-950)}
-
-/* compact bar slides in once the masthead has scrolled away */
-.compact-bar{
+/* ---------- the chrome: nearly nothing, floating on the media ----------
+   Transparent over imagery (light text), gains an ivory glass back once the
+   page scrolls past the first viewport (js/site.js toggles .is-solid). */
+.chrome{
   position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(247,244,236,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--rule);
-  transform:translateY(-101%);transition:transform .45s var(--ease);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px clamp(16px,2.6vw,36px);
+  transition:background-color .4s var(--ease),box-shadow .4s var(--ease),padding .4s var(--ease);
 }
-.compact-bar.is-shown{transform:none}
-.compact-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;height:var(--header-h)}
-.cb-brand{display:flex;align-items:center;gap:10px;min-height:44px}
-.cb-brand img{height:30px;width:auto}
-.cb-brand span{
-  font-family:var(--font-display);font-weight:560;font-size:1.02rem;letter-spacing:0.05em;
-  text-transform:uppercase;color:var(--text);white-space:nowrap;
+.chrome.is-solid{
+  background:rgba(247,244,236,0.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 var(--rule);padding-block:10px;
 }
-.cb-nav{display:flex;align-items:center;gap:2px}
-.cb-nav a{
-  font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-soft);
-  padding:12px 12px;min-height:44px;display:inline-flex;align-items:center;
-  transition:color .3s var(--ease);
+.chrome-brand{display:flex;align-items:center;gap:10px;min-height:44px}
+.chrome-brand img{height:34px;width:auto}
+.chrome-brand span{
+  font-family:var(--font-display);font-size:0.82rem;letter-spacing:0.12em;
+  text-transform:uppercase;line-height:1.25;color:#fff;transition:color .4s var(--ease);
+  text-shadow:0 1px 12px rgba(18,20,16,0.35);
 }
-.cb-nav a:hover,.cb-nav a.is-active{color:var(--text)}
-.cb-cta{display:flex;align-items:center;gap:8px}
-.cb-cta .btn{min-height:44px;padding:11px 16px}
+.chrome.is-solid .chrome-brand span,.chrome.on-light .chrome-brand span{color:var(--text);text-shadow:none}
+.chrome-nav{display:flex;align-items:center;gap:clamp(4px,1.2vw,14px)}
+.chrome-nav a{
+  font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;
+  color:rgba(255,255,255,0.92);text-shadow:0 1px 12px rgba(18,20,16,0.35);
+  padding:12px 10px;min-height:44px;display:inline-flex;align-items:center;
+  transition:color .3s var(--ease),text-shadow .3s var(--ease);
+}
+.chrome.is-solid .chrome-nav a,.chrome.on-light .chrome-nav a{color:var(--text-soft);text-shadow:none}
+.chrome.is-solid .chrome-nav a:hover,.chrome.on-light .chrome-nav a:hover,
+.chrome.is-solid .chrome-nav a.is-active,.chrome.on-light .chrome-nav a.is-active{color:var(--text)}
+.chrome-nav a:hover{color:#fff}
+.chrome-tel{white-space:nowrap}
+.chrome-cta{
+  border:1px solid rgba(255,255,255,0.7);color:#fff;border-radius:var(--radius-sm);
+  padding:12px 18px !important;
+}
+.chrome.is-solid .chrome-cta,.chrome.on-light .chrome-cta{border-color:var(--rule-strong);color:var(--text) !important}
+.chrome-cta:hover{background:rgba(255,255,255,0.16)}
+.chrome.is-solid .chrome-cta:hover,.chrome.on-light .chrome-cta:hover{background:var(--ink-950);color:var(--paper-100) !important;border-color:var(--ink-950)}
 
 .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center}
 .nav-toggle span,.nav-toggle span::before,.nav-toggle span::after{
-  content:'';display:block;width:20px;height:1.5px;background:var(--text);position:relative;
+  content:'';display:block;width:20px;height:1.5px;background:#fff;position:relative;
   transition:transform .3s var(--ease),opacity .3s var(--ease),background-color .3s var(--ease);
 }
+.chrome.is-solid .nav-toggle span,.chrome.is-solid .nav-toggle span::before,.chrome.is-solid .nav-toggle span::after,
+.chrome.on-light .nav-toggle span,.chrome.on-light .nav-toggle span::before,.chrome.on-light .nav-toggle span::after{background:var(--text)}
 .nav-toggle span::before{position:absolute;top:-6px}
 .nav-toggle span::after{position:absolute;top:6px}
-.nav-toggle[aria-expanded="true"] span{background:transparent}
-.nav-toggle[aria-expanded="true"] span::before{top:0;transform:rotate(45deg);background:var(--text-on-ink)}
-.nav-toggle[aria-expanded="true"] span::after{top:0;transform:rotate(-45deg);background:var(--text-on-ink)}
+.nav-toggle[aria-expanded="true"] span{background:transparent !important}
+.nav-toggle[aria-expanded="true"] span::before{top:0;transform:rotate(45deg);background:var(--text-on-ink) !important}
+.nav-toggle[aria-expanded="true"] span::after{top:0;transform:rotate(-45deg);background:var(--text-on-ink) !important}
 
 @media(max-width:900px){
-  .cb-nav,.cb-cta .btn{display:none}
+  .chrome-nav a:not(.chrome-cta){display:none}
   .nav-toggle{display:flex}
+}
+@media(max-width:520px){
+  .chrome-tel{display:none !important}
 }
 
 .scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--teal);z-index:200;width:0%}
@@ -186,8 +167,8 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
 
 /* ---------- cover (home) ---------- */
 .cover{position:relative}
-.cover-media{position:relative;overflow:hidden;background:var(--ink-950)}
-.cover-media{height:clamp(420px,80svh,860px)}
+.cover-media{position:relative;overflow:hidden;background:var(--bg)}
+.cover-media{height:100svh}
 .cover-media img{width:100%;height:100%;object-fit:cover;object-position:60% 50%}
 .cover[data-hero] .cover-media img{transform:scale(1.06);transition:transform 3s var(--ease)}
 .cover[data-hero].is-loaded .cover-media img{transform:scale(1)}
@@ -200,8 +181,8 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
   text-shadow:0 1px 10px rgba(18,20,16,0.7);
 }
 .cover-title{
-  color:#fff;font-family:var(--font-display);font-weight:500;font-variation-settings:'opsz' 96;
-  font-size:clamp(2rem,4.4vw,3.9rem);line-height:1.04;margin-top:12px;max-width:16ch;
+  color:#fff;font-family:var(--font-display);font-weight:500;
+  font-size:clamp(2.4rem,5.6vw,5rem);line-height:1.03;margin-top:12px;max-width:16ch;
   text-shadow:0 2px 22px rgba(18,20,16,0.55);
 }
 .cover-title .line{display:block;overflow:hidden}
@@ -213,6 +194,71 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
 .cover-actions{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
 .cover-actions .btn-brass{background:var(--paper-100);color:var(--ink-950)}
 .cover-actions .btn-brass:hover{background:var(--teal);color:#fff}
+
+/* ---------- the ember monument (js/hero3d.js) ----------
+   The photo and headline hold back while the monument runs, then fade up
+   as the embers seat into the photograph. Every rule is scoped so the
+   static hero is untouched when WebGL/motion are unavailable. */
+#hero3d-canvas{position:absolute;inset:0;z-index:3;width:100%;height:100%;display:block}
+.cover[data-hero3d].h3-active .cover-media{background:var(--bg)}
+html.h3-pending .cover[data-hero3d] .cover-media img{opacity:0;transition:none}
+.cover[data-hero3d].h3-active .cover-media img{opacity:0}
+.cover[data-hero3d].h3-active .cover-scrim{opacity:0}
+/* the sharp image fades up UNDER the still-live ember mosaic — a long, seamless develop */
+.cover[data-hero3d].h3-resolved .cover-media img{opacity:1;transition:opacity 1.8s var(--ease)}
+.cover[data-hero3d].h3-resolved .cover-scrim{opacity:1;transition:opacity 2.2s var(--ease)}
+html.h3-pending .cover[data-hero3d] .cover-inner,
+.cover[data-hero3d].h3-active .cover-inner{opacity:0;transform:translateY(14px)}
+.cover[data-hero3d].h3-resolved .cover-inner{opacity:1;transform:none;transition:opacity .9s var(--ease) .25s,transform .9s var(--ease) .25s}
+/* during the monument the photo must not push-in invisibly then jump */
+.cover[data-hero3d] .cover-media img{object-position:50% 50%}
+@media (prefers-reduced-motion:reduce){
+  #hero3d-canvas{display:none}
+  .cover[data-hero3d] .cover-media img,.cover[data-hero3d] .cover-inner{opacity:1;transform:none}
+}
+
+/* ---------- the film: full-viewport chapters that slide over each other ---------- */
+.chapter{position:relative;height:100svh;overflow:hidden}
+.film .chapter-ground{position:sticky;top:0}
+.chapter-media{position:absolute;inset:0}
+.chapter-media img{width:100%;height:100%;object-fit:cover;will-change:transform;transform:scale(1.12)}
+.chapter-scrim{position:absolute;inset:0;background:
+  linear-gradient(180deg,rgba(18,20,16,0.18) 0%,rgba(18,20,16,0) 30%,rgba(18,20,16,0) 55%,rgba(18,20,16,0.58) 100%)}
+.chapter-copy{position:absolute;left:0;right:0;bottom:0;padding:0 clamp(16px,4vw,56px) clamp(28px,4.6vw,56px);color:#fff}
+.chapter-meta{font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;
+  color:rgba(255,255,255,0.85);text-shadow:0 1px 10px rgba(18,20,16,0.6)}
+.chapter-name{margin-top:8px}
+.chapter-name a{
+  font-family:var(--font-display);font-weight:400;color:#fff;
+  font-size:clamp(2.6rem,7vw,6rem);line-height:1;letter-spacing:0.01em;
+  text-shadow:0 2px 26px rgba(18,20,16,0.55);
+}
+.chapter-link{
+  display:inline-flex;align-items:center;gap:10px;margin-top:14px;min-height:44px;
+  font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#fff;
+  border-bottom:1px solid rgba(255,255,255,0.6);text-shadow:0 1px 10px rgba(18,20,16,0.6);
+}
+.chapter-link .arrow{transition:transform .35s var(--ease)}
+.chapter-link:hover .arrow{transform:translateX(6px)}
+.chapter-index{
+  position:absolute;top:calc(14px + 52px);right:clamp(16px,2.6vw,36px);
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;
+  color:rgba(255,255,255,0.75);text-shadow:0 1px 10px rgba(18,20,16,0.6);
+}
+.chapter-copy,.chapter-index{z-index:4}
+
+/* numbers chapter on the ivory stage */
+.chapter-paper{height:auto;min-height:72svh;display:flex;align-items:center;background:var(--bg)}
+.numbers-stage{padding-block:clamp(56px,10vh,120px)}
+.numbers-line{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(28px,5vw,64px)}
+@media(min-width:860px){.numbers-line{grid-template-columns:repeat(4,1fr)}}
+.bignum .stat{
+  font-family:var(--font-display);font-size:clamp(2.6rem,6vw,5rem);line-height:1;display:block;color:var(--text);
+}
+.bignum .label{margin-top:10px;display:block;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-soft);font-weight:600}
+.numbers-note{margin-top:clamp(28px,4vw,44px);max-width:52ch;font-size:13.5px;color:var(--text-soft);line-height:1.7}
+
+.close-line{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4rem);line-height:1.05}
 
 /* the plate caption row under any full image — a magazine figure line */
 .plate-cap{
@@ -410,7 +456,7 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:500;line-height:1.08;let
  * ================================================================== */
 
 /* ---- article head: kicker, title, standfirst — before the image ---- */
-.art-head{padding:clamp(30px,4.6vw,60px) 0 clamp(20px,3vw,36px)}
+.art-head{padding:calc(72px + clamp(22px,3.2vw,40px)) 0 clamp(20px,3vw,36px)}
 .art-kicker{display:flex;align-items:baseline;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;border-top:2px solid var(--rule-strong);padding-top:12px}
 .art-kicker .k{font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent-text);font-weight:600}
 .art-kicker .r{font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-soft);font-weight:600}
@@ -559,6 +605,15 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 .cm .v a{border-bottom:1px solid var(--rule-strong);min-height:44px;display:inline-flex;align-items:center}
 .close-rera{margin-top:30px;max-width:62ch;font-size:12px;line-height:1.7;color:var(--text-soft)}
 
+/* ---- ambient atmosphere video (generated, labelled) ---- */
+.ambient{position:relative}
+.ambient .ambient-video{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity 1.2s var(--ease);pointer-events:none;
+}
+.ambient .ambient-video.is-playing{opacity:1}
+@media (prefers-reduced-motion:reduce){.ambient .ambient-video{display:none}}
+
 /* ---- lightbox ---- */
 .lightbox{
   position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
@@ -585,7 +640,7 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 @media(max-width:640px){.lb-nav{width:44px;height:44px;font-size:24px}}
 
 /* ---- page head for secondary pages ---- */
-.page-head{padding:clamp(30px,4.6vw,56px) 0 clamp(18px,2.6vw,30px)}
+.page-head{padding:calc(72px + clamp(24px,3.6vw,44px)) 0 clamp(18px,2.6vw,30px)}
 .page-head .art-kicker{margin-bottom:0}
 .page-head h1{
   font-family:var(--font-display);font-weight:520;font-variation-settings:'opsz' 96;
@@ -593,7 +648,18 @@ table.area-table thead th{border-bottom:2px solid var(--rule-strong)}
 }
 .page-head .art-standfirst{margin-top:14px}
 
+/* Marcellus ships one weight; synthetic bolding smears its inscriptional
+   strokes, and Bodoni's variation axes mean nothing to it — normalize every
+   display-font selector in one place */
+h1,h2,h3,h4,.display-2,.display-3,.sec-title,.chrome-brand span,.chapter-name a,.close-line,.bignum .stat,
+.index-name,.index-no,.story-body h3,.std-item .n,.numrow .stat,
+.colophon-top .name,.art-title,.page-head h1,.pull-quote p,
+.ue-chip-id,.ue-panel-id,.ue-panel-area,.am-n,.quote-card p,.proj-close h2,
+.stub-row .n,.mobile-nav > a,.letter .dropcap::first-letter{
+  font-weight:400;font-variation-settings:normal;
+}
+
 @media print{
   .reveal,.mask > *{opacity:1 !important;transform:none !important}
-  .compact-bar,.mobile-actionbar,.scroll-progress{display:none !important}
+  .chrome,.mobile-actionbar,.scroll-progress{display:none !important}
 }

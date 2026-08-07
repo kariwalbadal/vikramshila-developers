@@ -278,7 +278,9 @@ const HOSPITALITY = [
     email: 'info@chinmaye.in',
     mapEmbed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.426357196371!2d86.99307541451124!3d25.25623918386872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sChinmaye%20Inn!5e0!3m2!1sen!2sin',
     heroImage: 'chinmayePng-scaled-1.jpg',
-    gallery: ['about_img_chinmaye.jpg', 'Pi7_Image_DSC_3510.jpg', 'Pi7_Image_DSC_3565.jpg', 'Pi7_Image_DSC_3576.jpg'],
+    // about_img_chinmaye.jpg removed: it is a stock photograph the old site used,
+    // not the actual hotel — showing it as the property would be a lie
+    gallery: ['Pi7_Image_DSC_3510.jpg', 'Pi7_Image_DSC_3565.jpg', 'Pi7_Image_DSC_3576.jpg'],
     notes: [],
   },
 ];
