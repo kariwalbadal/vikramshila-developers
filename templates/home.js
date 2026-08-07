@@ -87,18 +87,27 @@ function riverShowcase() {
 
 /* THE ZOOMER — scroll carries you INTO each building; passing inside
    arrives at the next ground. */
+/* THE ZOOMER — scroll WALKS you toward each building on its own generated
+   dolly footage (scrubbed frame-by-frame), then passes through to the next. */
 function zoomShowcase() {
   var picks = showcasePicks();
-  var scenes = picks.map((p, i) => `
+  var scenes = picks.map(function (p, i) {
+    var walk = 'videos/walk/' + p.slug + '.mp4';
+    var hasWalk = fs.existsSync(path.resolve(__dirname, '..', walk));
+    return `
     <div class="zoom-scene" data-zoom-scene style="z-index:${picks.length - i}">
-      <div class="zs-media"><img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" ${i > 1 ? 'loading="lazy"' : ''}></div>
+      <div class="zs-media">
+        <img src="${plate(p.heroImage)}" alt="${esc(p.name)}, ${esc(p.location)} — exterior view" ${i > 1 ? 'loading="lazy"' : ''}>
+        ${hasWalk ? `<video class="zs-video" muted playsinline preload="${i === 0 ? 'auto' : 'metadata'}" src="${u('/' + walk)}" data-walk aria-hidden="true"></video>` : ''}
+      </div>
       <div class="zs-scrim"></div>
       <div class="zs-copy">
         <div class="zs-meta">${String(i + 1).padStart(2, '0')} / ${picks.length} &middot; ${esc(p.location)} &middot; ${esc(p.status)}</div>
         <h2 class="zs-name"><a href="${u('/' + p.slug + '/')}">${esc(p.name)}</a></h2>
         <a class="zs-go" href="${u('/' + p.slug + '/')}">View the ground <span class="arrow">&rarr;</span></a>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `
 <section class="zoomer" data-zoomer>
   <div class="zoomer-stage" data-zoomer-stage>

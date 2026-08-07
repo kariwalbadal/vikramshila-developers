@@ -118,41 +118,54 @@
       requestAnimationFrame(tick);
     }
 
-    /* THE ZOOMER: scroll flies INTO each facade — blur-through — and
-       arrives at the next ground, already sharpening. */
+    /* THE ZOOMER: scroll SCRUBS each building's dolly footage — you walk
+       toward the entrance at the speed of your own scroll — then a
+       blur-through hands you to the next ground. */
     var zoomer = document.querySelector('[data-zoomer]');
     if (zoomer && window.innerWidth > 900) {
       var scenes = Array.prototype.slice.call(zoomer.querySelectorAll('[data-zoom-scene]'));
       var prog = zoomer.querySelector('[data-zoom-progress]');
-      var SEG = 120; // vh of scroll per building
+      var WALK = 0.72;   // portion of each scene spent walking the footage
+      var SEG = 140;     // vh of scroll per building
       var ztl = gsap.timeline({
         scrollTrigger: {
           trigger: zoomer, pin: '[data-zoomer-stage]', scrub: true,
           start: 'top top',
           end: '+=' + (scenes.length * SEG) + '%',
           onUpdate: function (self) {
-            if (!prog) return;
-            var n = Math.min(scenes.length, 1 + Math.floor(self.progress * scenes.length));
-            prog.textContent = String(n).padStart(2, '0') + ' / ' + String(scenes.length).padStart(2, '0');
+            var total = self.progress * scenes.length;
+            if (prog) {
+              var n = Math.min(scenes.length, 1 + Math.floor(total));
+              prog.textContent = String(n).padStart(2, '0') + ' / ' + String(scenes.length).padStart(2, '0');
+            }
+            // scrub the active scene's footage; warm up the next one
+            for (var i = 0; i < scenes.length; i++) {
+              var p = total - i;
+              var v = scenes[i].querySelector('[data-walk]');
+              if (!v) continue;
+              if (p >= -0.5 && v.preload !== 'auto') { v.preload = 'auto'; v.load(); }
+              if (p >= 0 && p <= WALK && v.duration) {
+                var t = (p / WALK) * (v.duration - 0.05);
+                if (Math.abs((v.currentTime || 0) - t) > 0.02) v.currentTime = t;
+              }
+            }
           },
         },
       });
       scenes.forEach(function (scene, i) {
         var media = scene.querySelector('.zs-media');
         var copy = scene.querySelector('.zs-copy');
-        var t0 = i;             // each scene owns one unit of the timeline
+        var t0 = i;
         if (i > 0) {
-          // arrive: sharpen out of the blur-through
-          ztl.fromTo(media, { scale: 1.18, filter: 'blur(10px)' },
-            { scale: 1, filter: 'blur(0px)', duration: 0.3, ease: 'power2.out' }, t0);
-          ztl.fromTo(copy, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.22, ease: 'power2.out' }, t0 + 0.08);
+          ztl.fromTo(media, { scale: 1.14, filter: 'blur(9px)' },
+            { scale: 1, filter: 'blur(0px)', duration: 0.22, ease: 'power2.out' }, t0);
+          ztl.fromTo(copy, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, t0 + 0.05);
         }
         if (i < scenes.length - 1) {
-          // depart: fly INTO the building — scale toward the entry point,
-          // blur through, and hand off to the scene beneath
-          ztl.to(media, { scale: 5.2, filter: 'blur(14px)', duration: 0.42, ease: 'power2.in' }, t0 + 0.58);
-          ztl.to(copy, { autoAlpha: 0, y: -24, duration: 0.18, ease: 'power1.in' }, t0 + 0.58);
-          ztl.to(scene, { autoAlpha: 0, duration: 0.14, ease: 'none' }, t0 + 0.86);
+          // the footage has walked us to the entrance — pass through
+          ztl.to(media, { scale: 3.4, filter: 'blur(12px)', duration: 0.28, ease: 'power2.in' }, t0 + 0.72);
+          ztl.to(copy, { autoAlpha: 0, y: -24, duration: 0.14, ease: 'power1.in' }, t0 + 0.72);
+          ztl.to(scene, { autoAlpha: 0, duration: 0.1, ease: 'none' }, t0 + 0.9);
         }
       });
     }
